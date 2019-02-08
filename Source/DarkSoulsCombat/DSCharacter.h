@@ -6,8 +6,10 @@
 #include "GameFramework/Character.h"
 #include "DSCharacter.generated.h"
 
-enum CONTROLMODE {
-	eDarkSouls = 0
+enum class EControlMode
+{
+	eNomal = 0,
+	eDarkSouls = 1
 };
 
 UCLASS()
@@ -39,10 +41,13 @@ public:
 	UCameraComponent* Camera;
 
 private:
+	EControlMode eControlMode = EControlMode::eNomal;
+
 	void UpDown(float NewAxisValue);
 	void LeftRight(float NewAxisValue);
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
-	void SetControlMode(int32 ControlMode);
+	void ModeChange();
+	void SetControlMode(EControlMode eControlMode);
 
 };

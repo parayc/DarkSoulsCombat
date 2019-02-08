@@ -21,7 +21,7 @@ ADSCharacter::ADSCharacter()
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -88.0f), FRotator(0.0f, -90.0f, 0.0f));
 	
 	// 스프링암즈 길이
-	SpringArm->TargetArmLength = 400.0f;
+	SpringArm->TargetArmLength = 450.0f;
 	
 	// 기존 회전각에 대한 회전 각 +, -;
 	SpringArm->SetRelativeRotation(FRotator(-15.0f, 0.0f, 0.0f));
@@ -43,7 +43,7 @@ ADSCharacter::ADSCharacter()
 		GetMesh()->SetAnimInstanceClass(StartPack_Anim.Class);
 	}
 
-	SetControlMode(eDarkSouls);
+	SetControlMode(eControlMode);
 }
 
 // Called when the game starts or when spawned
@@ -68,6 +68,8 @@ void ADSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &ADSCharacter::LeftRight);
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ADSCharacter::LookUp);
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ADSCharacter::Turn);
+	PlayerInputComponent->BindAction(TEXT("ModeChange"), EInputEvent::IE_Pressed, this, &ADSCharacter::ModeChange);
+	
 
 }
 
@@ -99,11 +101,28 @@ void ADSCharacter::Turn(float NewAxisValue)
 	AddControllerYawInput(NewAxisValue);
 }
 
-void ADSCharacter::SetControlMode(int32 ControlMode)
+
+void ADSCharacter::ModeChange()
 {
-	if (ControlMode == eDarkSouls)
+	if (eControlMode == EControlMode::eNomal)
 	{
-		/*SpringArm->TargetArmLength = 450.f;
+		eControlMode = EControlMode::eDarkSouls;
+	}
+	else if (eControlMode == EControlMode::eDarkSouls)
+	{
+		eControlMode = EControlMode::eNomal;
+	}
+
+	SetControlMode(eControlMode);
+}
+
+void ADSCharacter::SetControlMode(EControlMode eMode)
+{
+	switch (eMode)
+	{
+	case EControlMode::eNomal:
+	{
+		SpringArm->TargetArmLength = 450.f;
 		SpringArm->SetRelativeRotation(FRotator::ZeroRotator);
 		SpringArm->bUsePawnControlRotation = true;
 		SpringArm->bInheritPitch = true;
@@ -113,6 +132,27 @@ void ADSCharacter::SetControlMode(int32 ControlMode)
 		bUseControllerRotationYaw = false;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 		GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f);
-*/
+
+		break;
+	}
+
+	case EControlMode::eDarkSouls:
+	{
+		SpringArm->TargetArmLength = 450.f;
+		SpringArm->SetRelativeRotation(FRotator(-15.0f, 0.0f, 0.0f));
+		SpringArm->bUsePawnControlRotation = true;
+		SpringArm->bInheritPitch = true;
+		SpringArm->bInheritYaw = true;
+		SpringArm->bInheritRoll = true;
+		SpringArm->bDoCollisionTest = true;
+		bUseControllerRotationYaw = true;
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f);
+
+		break;
+	}
+
+	default:
+		break;
 	}
 }
