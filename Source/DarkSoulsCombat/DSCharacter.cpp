@@ -8,6 +8,7 @@ ADSCharacter::ADSCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Git Test Code
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
@@ -26,7 +27,7 @@ ADSCharacter::ADSCharacter()
 	SpringArm->SetRelativeRotation(FRotator(-15.0f, 0.0f, 0.0f));
 	
 	// 스켈레탈 메시 연결
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_Mannequin(TEXT("/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_Mannequin(TEXT("/Game/AnimStarterPack/UE4_Mannequin/Mesh/SK_Mannequin.SK_Mannequin"));
 	if (SK_Mannequin.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(SK_Mannequin.Object);
@@ -35,13 +36,14 @@ ADSCharacter::ADSCharacter()
 	// 메쉬의 애니메이션은 애님 블루프린트로 관리할 것
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 
-
 	// 애니메이션 블루프린트 연결 
 	static ConstructorHelpers::FClassFinder<UAnimInstance> StartPack_Anim(TEXT("/Game/AnimStarterPack/UE4ASP_HeroTPP_AnimBlueprint.UE4ASP_HeroTPP_AnimBlueprint_C"));
 	if (StartPack_Anim.Succeeded())
 	{
 		GetMesh()->SetAnimInstanceClass(StartPack_Anim.Class);
 	}
+
+	SetControlMode(eDarkSouls);
 }
 
 // Called when the game starts or when spawned
@@ -64,18 +66,53 @@ void ADSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ADSCharacter::UpDown);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &ADSCharacter::LeftRight);
+	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ADSCharacter::LookUp);
+	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ADSCharacter::Turn);
 
 }
 
 void ADSCharacter::UpDown(float NewAxisValue)
 {
+
+	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), NewAxisValue);
+
 	// GetActorForwardVector() 액터의 전진방향 값 가져오기
-	AddMovementInput(GetActorForwardVector(), NewAxisValue);
+	//AddMovementInput(GetActorForwardVector(), NewAxisValue);
 }
 
 
 void ADSCharacter::LeftRight(float NewAxisValue)
 {
 	// GetActorRightVector() 액터의 옆방향 값 가져오기
-	AddMovementInput(GetActorRightVector(), NewAxisValue);
+	//AddMovementInput(GetActorRightVector(), NewAxisValue);
+	
+	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), NewAxisValue);
+}
+
+void ADSCharacter::LookUp(float NewAxisValue)
+{
+	AddControllerPitchInput(NewAxisValue);
+}
+
+void ADSCharacter::Turn(float NewAxisValue)
+{
+	AddControllerYawInput(NewAxisValue);
+}
+
+void ADSCharacter::SetControlMode(int32 ControlMode)
+{
+	if (ControlMode == eDarkSouls)
+	{
+		/*SpringArm->TargetArmLength = 450.f;
+		SpringArm->SetRelativeRotation(FRotator::ZeroRotator);
+		SpringArm->bUsePawnControlRotation = true;
+		SpringArm->bInheritPitch = true;
+		SpringArm->bInheritYaw = true;
+		SpringArm->bInheritRoll = true;
+		SpringArm->bDoCollisionTest = true;
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f);
+*/
+	}
 }

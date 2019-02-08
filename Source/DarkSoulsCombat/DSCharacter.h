@@ -6,10 +6,16 @@
 #include "GameFramework/Character.h"
 #include "DSCharacter.generated.h"
 
+enum CONTROLMODE {
+	eDarkSouls = 0
+};
+
 UCLASS()
 class DARKSOULSCOMBAT_API ADSCharacter : public ACharacter
 {
 	GENERATED_BODY()
+
+
 
 public:
 	// Sets default values for this character's properties
@@ -35,6 +41,8 @@ public:
 private:
 	void UpDown(float NewAxisValue);
 	void LeftRight(float NewAxisValue);
-
+	void LookUp(float NewAxisValue);
+	void Turn(float NewAxisValue);
+	void SetControlMode(int32 ControlMode);
 
 };

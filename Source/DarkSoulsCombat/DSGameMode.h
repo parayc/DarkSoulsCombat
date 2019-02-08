@@ -15,5 +15,7 @@ class DARKSOULSCOMBAT_API ADSGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
+public:
 	ADSGameMode();
+
 };
