@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "DSCharacter.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 ADSCharacter::ADSCharacter()
@@ -58,6 +59,21 @@ void ADSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	float fDetectRadius = 600.0f;
+
+	// 반경 6미터에 모든 오브젝트 탐지
+	TArray<FOverlapResult> arrOverlapResults;
+	FCollisionQueryParams CollisionQueryParam(NAME_None, false, this);
+	bool bResult = GetWorld()->OverlapMultiByChannel(
+		arrOverlapResults,
+		GetActorLocation(),
+		FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel2,
+		FCollisionShape::MakeSphere(fDetectRadius),
+		CollisionQueryParam
+	);
+
+	DrawDebugSphere(GetWorld(), GetActorLocation(), fDetectRadius, 16, FColor::Red, false, 0.2f);
 }
 
 // Called to bind functionality to input
