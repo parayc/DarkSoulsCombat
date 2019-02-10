@@ -10,6 +10,8 @@ ADSCharacter::ADSCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Git Test Code
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("DSCharacter"));
+
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
@@ -72,6 +74,27 @@ void ADSCharacter::Tick(float DeltaTime)
 		FCollisionShape::MakeSphere(fDetectRadius),
 		CollisionQueryParam
 	);
+
+
+	if (bResult)
+	{
+		if (arrOverlapResults.Num() >= 0)
+		{
+			for (auto OverlapResult : arrOverlapResults)
+			{
+				ADSCharacter* DSCharacter = Cast<ADSCharacter>(OverlapResult.GetActor());
+
+				if (DSCharacter)
+				{
+					DrawDebugSphere(GetWorld(), GetActorLocation(), fDetectRadius, 16, FColor::Green, false, 0.2f);
+					DrawDebugPoint(GetWorld(), DSCharacter->GetActorLocation(), 10.0f, FColor::Blue, false, 0.2f);
+					DrawDebugLine(GetWorld(), this->GetActorLocation(), DSCharacter->GetActorLocation(), FColor::Blue, false, 0.2f);
+
+					return;
+				}
+			}
+		}
+	}
 
 	DrawDebugSphere(GetWorld(), GetActorLocation(), fDetectRadius, 16, FColor::Red, false, 0.2f);
 }
