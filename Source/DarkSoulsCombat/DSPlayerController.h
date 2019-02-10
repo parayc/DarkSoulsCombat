@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "DarkSoulsCombat.h"
 #include "GameFramework/PlayerController.h"
 #include "DSPlayerController.generated.h"
 

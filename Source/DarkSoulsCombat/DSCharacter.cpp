@@ -61,42 +61,10 @@ void ADSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	float fDetectRadius = 600.0f;
 
-	// 반경 6미터에 모든 오브젝트 탐지
-	TArray<FOverlapResult> arrOverlapResults;
-	FCollisionQueryParams CollisionQueryParam(NAME_None, false, this);
-	bool bResult = GetWorld()->OverlapMultiByChannel(
-		arrOverlapResults,
-		GetActorLocation(),
-		FQuat::Identity,
-		ECollisionChannel::ECC_GameTraceChannel2,
-		FCollisionShape::MakeSphere(fDetectRadius),
-		CollisionQueryParam
-	);
+	RadialDetection(DeltaTime);
 
 
-	if (bResult)
-	{
-		if (arrOverlapResults.Num() >= 0)
-		{
-			for (auto OverlapResult : arrOverlapResults)
-			{
-				ADSCharacter* DSCharacter = Cast<ADSCharacter>(OverlapResult.GetActor());
-
-				if (DSCharacter)
-				{
-					DrawDebugSphere(GetWorld(), GetActorLocation(), fDetectRadius, 16, FColor::Green, false, 0.2f);
-					DrawDebugPoint(GetWorld(), DSCharacter->GetActorLocation(), 10.0f, FColor::Blue, false, 0.2f);
-					DrawDebugLine(GetWorld(), this->GetActorLocation(), DSCharacter->GetActorLocation(), FColor::Blue, false, 0.2f);
-
-					return;
-				}
-			}
-		}
-	}
-
-	DrawDebugSphere(GetWorld(), GetActorLocation(), fDetectRadius, 16, FColor::Red, false, 0.2f);
 }
 
 // Called to bind functionality to input
@@ -127,7 +95,14 @@ void ADSCharacter::LeftRight(float NewAxisValue)
 	// GetActorRightVector() 액터의 옆방향 값 가져오기
 	//AddMovementInput(GetActorRightVector(), NewAxisValue);
 	
-	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), NewAxisValue);
+	const FRotator Rotation = CameraTarget == nullptr ? GetControlRotation() : (CameraTarget->GetActorLocation() - GetActorLocation()).GetSafeNormal().Rotation();
+	const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+	// get right vector 
+	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+	AddMovementInput(Direction, NewAxisValue);
+	//AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), NewAxisValue);
 }
 
 void ADSCharacter::LookUp(float NewAxisValue)
@@ -162,7 +137,7 @@ void ADSCharacter::SetControlMode(EControlMode eMode)
 	case EControlMode::eNomal:
 	{
 		SpringArm->TargetArmLength = 450.f;
-		SpringArm->SetRelativeRotation(FRotator::ZeroRotator);
+		SpringArm->SetRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
 		SpringArm->bUsePawnControlRotation = true;
 		SpringArm->bInheritPitch = true;
 		SpringArm->bInheritYaw = true;
@@ -178,7 +153,7 @@ void ADSCharacter::SetControlMode(EControlMode eMode)
 	case EControlMode::eDarkSouls:
 	{
 		SpringArm->TargetArmLength = 450.f;
-		SpringArm->SetRelativeRotation(FRotator(-15.0f, 0.0f, 0.0f));
+		SpringArm->SetRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
 		SpringArm->bUsePawnControlRotation = true;
 		SpringArm->bInheritPitch = true;
 		SpringArm->bInheritYaw = true;
@@ -194,4 +169,73 @@ void ADSCharacter::SetControlMode(EControlMode eMode)
 	default:
 		break;
 	}
+}
+
+void ADSCharacter::RadialDetection(float DeltaTime)
+{
+	float fDetectRadius = 600.0f;
+
+
+
+	// 반경 6미터에 모든 오브젝트 탐지
+	TArray<FOverlapResult> arrOverlapResults;
+	FCollisionQueryParams CollisionQueryParam(NAME_None, false, this);
+	bool bResult = GetWorld()->OverlapMultiByChannel(
+		arrOverlapResults,
+		GetActorLocation(),
+		FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel2,
+		FCollisionShape::MakeSphere(fDetectRadius),
+		CollisionQueryParam
+	);
+
+	// 탐지된 오브젝트가 캐릭터인지 판별하고
+	// 범위 표시 그린, 탐지 오브젝트와의 선 그리기
+	
+	
+	float ClosestDotToCenter = 0.f;
+
+	if (bResult)
+	{
+		if (arrOverlapResults.Num() >= 0)
+		{
+			for (auto OverlapResult : arrOverlapResults)
+			{
+				ADSCharacter* DSCharacter = Cast<ADSCharacter>(OverlapResult.GetActor());
+				if (DSCharacter)
+				{
+					DrawDebugSphere(GetWorld(), GetActorLocation(), fDetectRadius, 16, FColor::Green, false, 0.2f);
+					DrawDebugPoint(GetWorld(), DSCharacter->GetActorLocation(), 10.0f, FColor::Blue, false, 0.2f);
+					DrawDebugLine(GetWorld(), this->GetActorLocation(), DSCharacter->GetActorLocation(), FColor::Blue, false, 0.2f);
+
+					float Dot = FVector::DotProduct(GetActorForwardVector(), (DSCharacter->GetActorLocation() - GetActorLocation()).GetSafeNormal());
+
+					if (Dot > ClosestDotToCenter)
+					{
+						ClosestDotToCenter = Dot;
+						CameraTarget = DSCharacter;
+					}
+					
+					//ABLOG(Warning, TEXT("%f"), fResult);
+				}
+			}
+
+			if (CameraTarget != nullptr)
+			{
+				FVector TargetVect = CameraTarget->GetActorLocation() - GetActorLocation();
+				FRotator TargetRot = TargetVect.GetSafeNormal().Rotation();
+				FRotator CurrentRot = GetControlRotation();
+				FRotator NewRot = FMath::RInterpTo(CurrentRot, TargetRot, DeltaTime, 10.0f);
+
+				// Update control rotation to face target
+				GetController()->SetControlRotation(NewRot);
+			}
+
+		}
+		return;
+	}
+
+	
+
+	DrawDebugSphere(GetWorld(), GetActorLocation(), fDetectRadius, 16, FColor::Red, false, 0.2f);
 }

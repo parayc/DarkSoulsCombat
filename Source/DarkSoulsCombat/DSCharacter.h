@@ -40,6 +40,11 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	UCameraComponent* Camera;
 
+	UPROPERTY(BlueprintReadOnly)
+	ADSCharacter* CameraTarget;
+
+
+
 private:
 	EControlMode eControlMode = EControlMode::eNomal;
 
@@ -50,4 +55,5 @@ private:
 	void ModeChange();
 	void SetControlMode(EControlMode eControlMode);
 
+	void RadialDetection(float DeltaTime);
 };
