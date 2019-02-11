@@ -48,12 +48,18 @@ public:
 private:
 	EControlMode eControlMode = EControlMode::eNomal;
 
+	// PlayerInput
 	void UpDown(float NewAxisValue);
 	void LeftRight(float NewAxisValue);
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 	void ModeChange();
+	void Target();
+
 	void SetControlMode(EControlMode eControlMode);
+	
+	// 범위내에서 가장 가까이 있는 놈 얻어오기
+	void GetTarget();
 
 	void RadialDetection(float DeltaTime);
 };
