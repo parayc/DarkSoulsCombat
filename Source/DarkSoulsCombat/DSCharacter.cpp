@@ -261,6 +261,15 @@ void ADSCharacter::RadialDetection(float DeltaTime)
 void ADSCharacter::Target()
 {
 	GetTarget();
+
+	if (CameraTarget != nullptr)
+	{
+		SetControlMode(EControlMode::eDarkSouls);
+	}
+	else
+	{
+		SetControlMode(EControlMode::eNomal);
+	}
 }
 
 void ADSCharacter::GetTarget()
