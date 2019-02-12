@@ -7,6 +7,13 @@ UDSAnimInstance::UDSAnimInstance()
 	float fCurrentPawnSpeed = 0.0f;
 	float fDirection = 0.0f;
 	bool bIsInAir = false;
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(TEXT("/Game/AnimStarterPack/DSCharactorMontage.DSCharactorMontage"));
+	if (ATTACK_MONTAGE.Succeeded())
+	{
+		AttackMontage = ATTACK_MONTAGE.Object;
+	}
+
 }
 
 void UDSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -29,5 +36,13 @@ void UDSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		{
 			bIsInAir = pCharacter->GetMovementComponent()->IsFalling();
 		}
+	}
+}
+
+void UDSAnimInstance::PlayAttackMontage()
+{
+	if (!Montage_IsPlaying(AttackMontage))
+	{
+		Montage_Play(AttackMontage, 1.0f);
 	}
 }

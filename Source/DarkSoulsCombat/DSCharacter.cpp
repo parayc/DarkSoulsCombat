@@ -3,6 +3,9 @@
 #include "DSCharacter.h"
 #include "DrawDebugHelpers.h"
 #include "Components/WidgetComponent.h"
+#include "DSAIController.h"
+#include "DSWeapon.h"
+#include "DSAnimInstance.h"
 
 // Sets default values
 ADSCharacter::ADSCharacter()
@@ -10,9 +13,12 @@ ADSCharacter::ADSCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Git Test Code
-	GetCapsuleComponent()->SetCollisionProfileName(TEXT("DSCharacter"));
+	AIControllerClass = ADSAIController::StaticClass();
+	// 자동으로 플레어아가 소유한 캐릭터를 제외하고는 AICotroller가 소유하도록 설정
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
+	// 콜리전 설정
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("DSCharacter"));
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
@@ -23,6 +29,7 @@ ADSCharacter::ADSCharacter()
 	Camera->SetupAttachment(SpringArm);
 	TargetUI->SetupAttachment(GetMesh());
 	
+	// TargetLockOn UI를 모든 캐릭터마다 만들고 그 숨김을 기본으로 해놓는다.
 	TargetUI->SetRelativeLocation(FVector(0.0f, 0.0f, 130.0f));
 	TargetUI->SetWidgetSpace(EWidgetSpace::Screen);
 	static ConstructorHelpers::FClassFinder<UUserWidget> UI_TARGETLOCKON(TEXT("/Game/Enemy/UI/UI_TargetLockOn.UI_TargetLockOn_C"));
@@ -40,7 +47,8 @@ ADSCharacter::ADSCharacter()
 	
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 
-	
+
+
 	// 스켈레탈 메시 연결
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_Mannequin(TEXT("/Game/AnimStarterPack/UE4_Mannequin/Mesh/SK_Mannequin.SK_Mannequin"));
 	if (SK_Mannequin.Succeeded())
@@ -66,6 +74,14 @@ void ADSCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+
+	FName Socket_RightHand_Weapon(TEXT("Socket_RightHand_Weapon"));
+	auto CurWeapon = GetWorld()->SpawnActor<ADSWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+	if (nullptr != CurWeapon)
+	{
+		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket_RightHand_Weapon);
+	}
+
 }
 
 // Called every frame
@@ -89,6 +105,7 @@ void ADSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ADSCharacter::Turn);
 	PlayerInputComponent->BindAction(TEXT("ModeChange"), EInputEvent::IE_Pressed, this, &ADSCharacter::ModeChange);
 	PlayerInputComponent->BindAction(TEXT("Target"), EInputEvent::IE_Pressed, this, &ADSCharacter::Target);
+	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ADSCharacter::Attack);
 }
 
 void ADSCharacter::UpDown(float NewAxisValue)
@@ -313,15 +330,21 @@ void ADSCharacter::GetTarget()
 
 	float ClosestDotToCenter = 0.f;
 
+	// 탐색된 결과가 존재한다면
 	if (bResult)
 	{
+		// 탐색된 결과가 들어있는 배열에 1개 이상의 값이 들어있다면
 		if (arrOverlapResults.Num() >= 0)
 		{
+			// 배열의 수만큼 반복
 			for (auto OverlapResult : arrOverlapResults)
 			{
 				ADSCharacter* DSCharacter = Cast<ADSCharacter>(OverlapResult.GetActor());
 				if (DSCharacter)
 				{
+					// 탐색된 액터의 위치와 플레이어 캐릭터의 위치를 빼서 나온 백터값과
+					// 카메라의 정면 방향 벡터의 내적을 구하여
+					// 수치가 가장 높다면 카메라 정면 방향에 가장 근접한 오브젝트 판별
 					float Dot = FVector::DotProduct(Camera->GetForwardVector(), (DSCharacter->GetActorLocation() - GetActorLocation()).GetSafeNormal());
 
 					if (Dot > ClosestDotToCenter)
@@ -333,11 +356,13 @@ void ADSCharacter::GetTarget()
 				}
 			}
 
+			// 이전 타겟과 현재 선택된 타겟이 다르다면 이전 타겟의 TargetLockOn UI를 숨김으로 변경
 			if (PrevCameraTarget != CameraTarget && PrevCameraTarget != nullptr)
 			{
 				PrevCameraTarget->TargetUI->SetHiddenInGame(true);
 			}
 
+			// 타겟이 정해졌다면 타겟의 TargetLockOn UI를 oN
 			if (CameraTarget != nullptr)
 			{
 				CameraTarget->TargetUI->SetHiddenInGame(false);
@@ -346,11 +371,23 @@ void ADSCharacter::GetTarget()
 	}
 	else
 	{
+		// 범위내의 선택된 타겟이 없다면
 		CameraTarget = nullptr;
 
+		// 이전 선택 타겟이 있었을 경우 이전 타겟의 TargetLockOn UI를 숨김으로 변경
 		if (PrevCameraTarget != CameraTarget && PrevCameraTarget != nullptr)
 		{
 			PrevCameraTarget->TargetUI->SetHiddenInGame(true);
 		}
+	}
+}
+
+// 일반공격 함수
+void ADSCharacter::Attack()
+{
+	auto AnimInstance = Cast<UDSAnimInstance>(GetMesh()->GetAnimInstance());
+	if (nullptr == AnimInstance) return;
+	{
+		AnimInstance->PlayAttackMontage();
 	}
 }

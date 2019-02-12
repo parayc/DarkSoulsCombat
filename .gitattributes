@@ -1,1 +1,2 @@
 Content/ParagonGreystone/ filter=lfs diff=lfs merge=lfs -text
+Content/Weapon_Pack filter=lfs diff=lfs merge=lfs -text
