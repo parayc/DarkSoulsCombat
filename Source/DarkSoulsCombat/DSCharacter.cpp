@@ -2,6 +2,7 @@
 
 #include "DSCharacter.h"
 #include "DrawDebugHelpers.h"
+#include "Components/WidgetComponent.h"
 
 // Sets default values
 ADSCharacter::ADSCharacter()
@@ -15,9 +16,23 @@ ADSCharacter::ADSCharacter()
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
+	TargetUI = CreateDefaultSubobject<UWidgetComponent>(TEXT("TARGETUI"));
+
 
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
+	TargetUI->SetupAttachment(GetMesh());
+	
+	TargetUI->SetRelativeLocation(FVector(0.0f, 0.0f, 130.0f));
+	TargetUI->SetWidgetSpace(EWidgetSpace::Screen);
+	static ConstructorHelpers::FClassFinder<UUserWidget> UI_TARGETLOCKON(TEXT("/Game/Enemy/UI/UI_TargetLockOn.UI_TargetLockOn_C"));
+	if (UI_TARGETLOCKON.Succeeded())
+	{
+		TargetUI->SetWidgetClass(UI_TARGETLOCKON.Class);
+		TargetUI->SetDrawSize(FVector2D(35.0f, 35.0f));
+	}
+
+	TargetUI->SetHiddenInGame(true);
 
 	// 소프트웨어 3차원 좌표계와 언리얼 엔진 3차원 좌표계가 달라서 맞춰주려고 -90,
 	// 언리얼엔진에서 엑터의 기준위치는 엑터의 정중앙이지만 캐릭터 에셋은 발바닥부터 그렇기 절반 높이 -
@@ -248,6 +263,7 @@ void ADSCharacter::RadialDetection(float DeltaTime)
 
 		// 컨트롤러의(마우스 방향)시점 과 캐릭터의 시선방향이 일치하는 옵션을 켜놓았기에 컨트롤러의 방향을 정해주면 캐릭터가 자동으로 그곳을 바라본다.
 		GetController()->SetControlRotation(NewRot);
+
 	}
 
 	//else if (CameraTarget != nullptr)
@@ -274,6 +290,13 @@ void ADSCharacter::Target()
 
 void ADSCharacter::GetTarget()
 {
+	ADSCharacter* PrevCameraTarget = nullptr;
+
+	if (CameraTarget != nullptr)
+	{
+		PrevCameraTarget = CameraTarget;
+	}
+
 	// Tab키를 누르면 범위내의 가장 가까운 타겟을 CameraTarget으로 설정해준다.
 	float fDetectRadius = 600.0f;
 
@@ -290,7 +313,6 @@ void ADSCharacter::GetTarget()
 
 	float ClosestDotToCenter = 0.f;
 
-
 	if (bResult)
 	{
 		if (arrOverlapResults.Num() >= 0)
@@ -300,19 +322,35 @@ void ADSCharacter::GetTarget()
 				ADSCharacter* DSCharacter = Cast<ADSCharacter>(OverlapResult.GetActor());
 				if (DSCharacter)
 				{
-					float Dot = FVector::DotProduct(GetActorForwardVector(), (DSCharacter->GetActorLocation() - GetActorLocation()).GetSafeNormal());
+					float Dot = FVector::DotProduct(Camera->GetForwardVector(), (DSCharacter->GetActorLocation() - GetActorLocation()).GetSafeNormal());
 
 					if (Dot > ClosestDotToCenter)
 					{
 						ClosestDotToCenter = Dot;
 						CameraTarget = DSCharacter;
+						
 					}
 				}
+			}
+
+			if (PrevCameraTarget != CameraTarget && PrevCameraTarget != nullptr)
+			{
+				PrevCameraTarget->TargetUI->SetHiddenInGame(true);
+			}
+
+			if (CameraTarget != nullptr)
+			{
+				CameraTarget->TargetUI->SetHiddenInGame(false);
 			}
 		}
 	}
 	else
 	{
 		CameraTarget = nullptr;
+
+		if (PrevCameraTarget != CameraTarget && PrevCameraTarget != nullptr)
+		{
+			PrevCameraTarget->TargetUI->SetHiddenInGame(true);
+		}
 	}
 }
