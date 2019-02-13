@@ -3,5 +3,6 @@
 #include "DarkSoulsCombat.h"
 #include "Modules/ModuleManager.h"
 
-//DEFINE_LOG_CATEGORY(DarkSoulsCombat);
+DEFINE_LOG_CATEGORY(DarkSoulsCombat);
+
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, DarkSoulsCombat, "DarkSoulsCombat" );

@@ -47,11 +47,17 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = UI)
 	class UWidgetComponent* TargetUI;
 
-	void Attack();
-
 	UPROPERTY(BlueprintReadOnly)
 	ADSCharacter* CameraTarget;
 
+	virtual void PostInitializeComponents() override;
+
+
+	// 공격 관련
+	void Attack();
+
+	void AttackStartComboState();
+	void AttackEndComboState();
 
 
 private:
@@ -71,4 +77,30 @@ private:
 	void GetTarget();
 
 	void RadialDetection(float DeltaTime);
+
+	UPROPERTY()
+	class UDSAnimInstance* DSAnim;
+
+
+	// 공격 관련
+	UFUNCTION()
+		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		bool IsAttacking;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		bool CanNextCombo;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		bool IsComboInputOn;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		int32 CurrentCombo;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		int32 MaxCombo;
+
+
+
 };

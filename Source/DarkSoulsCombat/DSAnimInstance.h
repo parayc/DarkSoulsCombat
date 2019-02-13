@@ -6,6 +6,10 @@
 #include "Animation/AnimInstance.h"
 #include "DSAnimInstance.generated.h"
 
+// 이건 왜케 안외워지냐 
+DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
+
 /**
  * 
  */
@@ -22,6 +26,15 @@ public:
 
 	void PlayAttackMontage();
 
+	// 콤보 공격관련 함수
+	void JumpToAttackMontageSection(int32 NewSection);
+
+	FName GetAttackMontageSectionName(int32 Section);
+
+
+	FOnNextAttackCheckDelegate OnNextAttackCheck;
+
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	float fCurrentPawnSpeed;
@@ -31,6 +44,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	float fDirection;
+
+	// 다음 콤보로 이어질 수 있는 구간인 NextAttackCheck 노티파이 발생시 호출 함수
+	UFUNCTION()
+	void AnimNotify_NextAttackCheck();
+
+
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* AttackMontage;

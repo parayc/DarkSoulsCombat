@@ -66,7 +66,39 @@ ADSCharacter::ADSCharacter()
 		GetMesh()->SetAnimInstanceClass(StartPack_Anim.Class);
 	}
 
+
+	// 콤보공격을 위한 변수
+	IsAttacking = false; // 현재 공격 몽타주 실행중인지 파악
+	MaxCombo = 4; // 콤보공격 단계 최대치
+	AttackEndComboState(); // 공격이 끝나면 콤보공격 관련된 변수 초기화해주려고
+
+
 	SetControlMode(eControlMode);
+}
+
+void ADSCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	DSAnim = Cast<UDSAnimInstance>(GetMesh()->GetAnimInstance());
+
+	DSAnim->OnMontageEnded.AddDynamic(this, &ADSCharacter::OnAttackMontageEnded);
+
+	// 콤보공격 관련 기능
+	DSAnim->OnNextAttackCheck.AddLambda([this]() -> void {
+		CanNextCombo = false;
+
+		// 콤보 실행 입력이 온이면 
+		if (IsComboInputOn)
+		{
+			// 콤보 시작을 알리는 함수
+			AttackStartComboState();
+			// 현재 섹션을 보내준다
+			// 말이 현재 섹션이지 AttackStartComboState 함수 거쳐서 오면 다음으로 넘어갈 섹션 넘버
+			DSAnim->JumpToAttackMontageSection(CurrentCombo);
+		}
+
+	});
 }
 
 // Called when the game starts or when spawned
@@ -110,6 +142,13 @@ void ADSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void ADSCharacter::UpDown(float NewAxisValue)
 {
+	if (IsAttacking)
+	{
+
+
+
+		return;
+	}
 
 	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), NewAxisValue);
 
@@ -120,6 +159,11 @@ void ADSCharacter::UpDown(float NewAxisValue)
 
 void ADSCharacter::LeftRight(float NewAxisValue)
 {
+	if (IsAttacking)
+	{
+		return;
+	}
+
 	// GetActorRightVector() 액터의 옆방향 값 가져오기
 	//AddMovementInput(GetActorRightVector(), NewAxisValue);
 	
@@ -141,6 +185,20 @@ void ADSCharacter::LookUp(float NewAxisValue)
 void ADSCharacter::Turn(float NewAxisValue)
 {
 	AddControllerYawInput(NewAxisValue);
+}
+
+
+void ADSCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	DSCHECK(IsAttacking);
+	DSCHECK(CurrentCombo > 0);
+	/*
+	if (IsAttacking == false || CurrentCombo > 0)
+	{
+		return;
+	}*/
+	IsAttacking = false;
+	AttackEndComboState();
 }
 
 
@@ -382,12 +440,75 @@ void ADSCharacter::GetTarget()
 	}
 }
 
+/*
+어택 시스템 설명
+DSCharacter에  NextAttackCheck 노티파이를 섹션별로 등록함
+첫번째 공격시에는 CanNextCombo를 true 설정하여 콤보가 가능한 상태로 만들며
+CurrentCombo를 +1 시켜준다
+그 이후 공격 몽타주를 실행시키고
+공격시 IsAttacking변수가 true로 변경
+
+첫번째 공격 실행중에 Attack함수가 호출됬을 시
+현재 공격이 실행중일경우 CurrentCombo가 1~3 사이에 있는지를 판별하며
+이미 첫번째 공격이 실행 되었을 경우기에 무조건 1 이상일 수 밖에 없다.
+판별결과가 참일경우
+CanNextCombo가 true인 경우 IsComboInputOn을 true로 설정하여
+NextAttackCheck 노티파이가 발생하였을 시 IsComboInputOn을 확인하여
+true일경우 다음 섹션으로 넘어갈 수 있게 해준다
+
+정리
+NextAttackCheck 노티파이 발생전에
+콤보 공격을 하고자하는 신호가 발생하였을경우 노티파이 이벤트 함수에서
+다음 섹션으로 넘어가서 콤보를 이어줌
+
+
+
+
+*/
 // 일반공격 함수
 void ADSCharacter::Attack()
 {
-	auto AnimInstance = Cast<UDSAnimInstance>(GetMesh()->GetAnimInstance());
-	if (nullptr == AnimInstance) return;
+	// 공격중이라면 첫회 공격차에서는 여기 안탐 2번째 콤보부터 탐
+	if (IsAttacking)
 	{
-		AnimInstance->PlayAttackMontage();
+		DSCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo))
+
+		if (CanNextCombo)
+		{
+			IsComboInputOn = true;
+		}
 	}
+	else
+	{
+		DSCHECK(CurrentCombo == 0);
+		AttackStartComboState();
+		DSAnim->PlayAttackMontage();
+		DSAnim->JumpToAttackMontageSection(CurrentCombo);
+		IsAttacking = true;
+	}
+}
+
+
+// 콤보 시작을 알리는 함수 콤보공격에 필요한 기본 값들을 셋팅한다.
+void ADSCharacter::AttackStartComboState()
+{
+	CanNextCombo = true;
+	// 한번 들어왔으면 다시 초기화  해줘야지
+	IsComboInputOn = false;
+
+	// 현재 콤보가 0~3 사이에 있는지 없으면 말이 안되니까
+	DSCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 0, MaxCombo - 1))
+
+	// 포함되도록인대 뭔지..
+	CurrentCombo = FMath::Clamp<int32>(CurrentCombo + 1, 1, MaxCombo);
+}
+
+// 공격이 끝나면 콤보공격 관련된 변수 초기화해주는 함수
+void ADSCharacter::AttackEndComboState()
+{
+
+	// 공격 몽타주 실행 끝나면 값 다 초기화
+	IsComboInputOn = false; // 콤보입력여부
+	CanNextCombo = false; // 다음 콤보로 이동 가능 여부
+	CurrentCombo = 0; // 현재 콤보 0번으로
 }
