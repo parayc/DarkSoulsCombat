@@ -3,6 +3,7 @@
 #pragma once
 
 #include "DarkSoulsCombat.h"
+#include "DSWeapon.h"
 #include "GameFramework/Character.h"
 #include "DSCharacter.generated.h"
 
@@ -35,13 +36,14 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
-	USkeletalMeshComponent* Weapon;
+	ADSWeapon* CurWeapon;
 	
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	USpringArmComponent* SpringArm;
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	UCameraComponent* Camera;
+
 
 
 	UPROPERTY(VisibleAnywhere, Category = UI)
@@ -55,6 +57,7 @@ public:
 
 	// 공격 관련
 	void Attack();
+	void AttackCheck();
 
 	void AttackStartComboState();
 	void AttackEndComboState();
@@ -80,6 +83,7 @@ private:
 
 	UPROPERTY()
 	class UDSAnimInstance* DSAnim;
+
 
 
 	// 공격 관련

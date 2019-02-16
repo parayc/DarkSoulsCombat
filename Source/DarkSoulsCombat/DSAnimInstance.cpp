@@ -56,6 +56,13 @@ void UDSAnimInstance::JumpToAttackMontageSection(int32 NewSection)
 	Montage_JumpToSection(GetAttackMontageSectionName(NewSection), AttackMontage);
 }
 
+void UDSAnimInstance::AnimNotify_AttackHit()
+{
+	DSLOG_S(Warning);
+
+	OnAttackHit.Broadcast();
+}
+
 void UDSAnimInstance::AnimNotify_NextAttackCheck()
 {
 	DSLOG_S(Warning);

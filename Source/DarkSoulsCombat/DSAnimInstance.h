@@ -31,7 +31,7 @@ public:
 
 	FName GetAttackMontageSectionName(int32 Section);
 
-
+	FOnAttackHitCheckDelegate OnAttackHit;
 	FOnNextAttackCheckDelegate OnNextAttackCheck;
 
 
@@ -49,6 +49,8 @@ private:
 	UFUNCTION()
 	void AnimNotify_NextAttackCheck();
 
+	UFUNCTION()
+	void AnimNotify_AttackHit();
 
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))

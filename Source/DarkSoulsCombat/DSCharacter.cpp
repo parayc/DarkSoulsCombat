@@ -4,7 +4,7 @@
 #include "DrawDebugHelpers.h"
 #include "Components/WidgetComponent.h"
 #include "DSAIController.h"
-#include "DSWeapon.h"
+
 #include "DSAnimInstance.h"
 
 // Sets default values
@@ -82,6 +82,8 @@ void ADSCharacter::PostInitializeComponents()
 
 	DSAnim = Cast<UDSAnimInstance>(GetMesh()->GetAnimInstance());
 
+	DSAnim->OnAttackHit.AddUObject(this, &ADSCharacter::AttackCheck);
+
 	DSAnim->OnMontageEnded.AddDynamic(this, &ADSCharacter::OnAttackMontageEnded);
 
 	// 콤보공격 관련 기능
@@ -108,13 +110,13 @@ void ADSCharacter::BeginPlay()
 	
 
 	FName Socket_RightHand_Weapon(TEXT("Socket_RightHand_Weapon"));
-	auto CurWeapon = GetWorld()->SpawnActor<ADSWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+	CurWeapon = GetWorld()->SpawnActor<ADSWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
 	if (nullptr != CurWeapon)
 	{
 		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket_RightHand_Weapon);
 	}
-
 }
+
 
 // Called every frame
 void ADSCharacter::Tick(float DeltaTime)
@@ -485,6 +487,30 @@ void ADSCharacter::Attack()
 		DSAnim->PlayAttackMontage();
 		DSAnim->JumpToAttackMontageSection(CurrentCombo);
 		IsAttacking = true;
+	}
+}
+
+void ADSCharacter::AttackCheck()
+{
+	FHitResult HitResult;
+	FCollisionQueryParams Params(NAME_None, false, this);
+	bool bResult = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		GetActorLocation(),
+		GetActorLocation() + GetActorForwardVector() * 200.0f, // 캐릭터 정면 2미터까지 충돌 발생여부 확인
+		FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel4,
+		FCollisionShape::MakeSphere(50.0f),
+		Params
+		);
+
+	if (bResult)
+	{
+		if (HitResult.Actor.IsValid())
+		{
+			DSLOG(Warning, TEXT("Hit Actor Name : %s"), *HitResult.Actor->GetName());
+			CurWeapon->PlayHitEffect();
+		}
 	}
 }
 

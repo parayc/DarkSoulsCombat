@@ -23,9 +23,16 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	USkeletalMeshComponent* Weapon;
+
+	UPROPERTY(VisibleAnywhere, Category = Effect)
+	UParticleSystemComponent* HitEffect;
+
+	void PlayHitEffect();
+
+	UFUNCTION()
+	void OnEffectFinished(class UParticleSystemComponent * Psystem);
 
 
 };
