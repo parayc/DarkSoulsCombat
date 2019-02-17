@@ -4,6 +4,7 @@
 
 #include "DarkSoulsCombat.h"
 #include "DSWeapon.h"
+#include "Sound/SoundCue.h"
 #include "GameFramework/Character.h"
 #include "DSCharacter.generated.h"
 
@@ -44,13 +45,15 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	UCameraComponent* Camera;
 
-
-
 	UPROPERTY(VisibleAnywhere, Category = UI)
 	class UWidgetComponent* TargetUI;
 
 	UPROPERTY(BlueprintReadOnly)
 	ADSCharacter* CameraTarget;
+
+
+
+	
 
 	virtual void PostInitializeComponents() override;
 
@@ -104,6 +107,11 @@ private:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		int32 MaxCombo;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		USoundCue* AttackSoundCue;
+
+	UAudioComponent* AttackSoundCueComponent;
 
 
 

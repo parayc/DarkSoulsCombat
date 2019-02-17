@@ -9,6 +9,7 @@
 // 이건 왜케 안외워지냐 
 DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnLastAttackDelegate);
 
 /**
  * 
@@ -31,8 +32,9 @@ public:
 
 	FName GetAttackMontageSectionName(int32 Section);
 
-	FOnAttackHitCheckDelegate OnAttackHit;
+	FOnAttackHitCheckDelegate	OnAttackHit;
 	FOnNextAttackCheckDelegate OnNextAttackCheck;
+	FOnLastAttackDelegate		OnLastAttack;
 
 
 private:
@@ -51,6 +53,9 @@ private:
 
 	UFUNCTION()
 	void AnimNotify_AttackHit();
+
+	UFUNCTION()
+	void AnimNotify_LastAttack();
 
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))

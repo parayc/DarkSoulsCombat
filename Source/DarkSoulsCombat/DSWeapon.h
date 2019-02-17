@@ -2,9 +2,13 @@
 
 #pragma once
 
+
 #include "DarkSoulsCombat.h"
 #include "GameFramework/Actor.h"
 #include "DSWeapon.generated.h"
+
+
+
 
 UCLASS()
 class DARKSOULSCOMBAT_API ADSWeapon : public AActor
@@ -29,10 +33,20 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Effect)
 	UParticleSystemComponent* HitEffect;
 
+	UPROPERTY(VisibleAnywhere, Category = Effect)
+	UParticleSystemComponent* LastAttack;
+
+
 	void PlayHitEffect();
+	void PlayLastAttackEffect();
+
+
+public:
+	UFUNCTION()
+	void OnHitEffectFinished(class UParticleSystemComponent* PSystem);
 
 	UFUNCTION()
-	void OnEffectFinished(class UParticleSystemComponent * Psystem);
+	void OnLastAttackEffectFinished(class UParticleSystemComponent* PSystem);
 
 
 };

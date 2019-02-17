@@ -70,6 +70,14 @@ void UDSAnimInstance::AnimNotify_NextAttackCheck()
 	OnNextAttackCheck.Broadcast();
 }
 
+
+void UDSAnimInstance::AnimNotify_LastAttack()
+{
+	DSLOG_S(Warning);
+
+	OnLastAttack.Broadcast();
+}
+
 // Attack1~3 까지의 섹션이름에 맞는 섹션 네임 만들어서 리턴해주는 함수
 FName UDSAnimInstance::GetAttackMontageSectionName(int32 Section)
 {

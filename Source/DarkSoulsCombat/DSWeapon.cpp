@@ -2,6 +2,7 @@
 
 #include "DSWeapon.h"
 
+
 // Sets default values
 ADSWeapon::ADSWeapon()
 {
@@ -20,18 +21,26 @@ ADSWeapon::ADSWeapon()
 	Weapon->SetCollisionProfileName(TEXT("DSWeapon"));
 
 	HitEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("HITEFFECT"));
+	LastAttack = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("LASTATTACK"));
 
 
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> P_HITEFFECT(TEXT("/Game/VFX_Toolkit_V1/ParticleSystems/356Days/Par_WildImpact_01.Par_WildImpact_01"));
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> P_HITEFFECT(TEXT("/Game/ParagonGreystone/FX/Particles/Greystone/Abilities/Primary/FX/P_Greystone_Primary_Impact.P_Greystone_Primary_Impact"));
 	if (P_HITEFFECT.Succeeded())
 	{
 		HitEffect->SetTemplate(P_HITEFFECT.Object);
 		HitEffect->bAutoActivate = false;
-		
+	}
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> P_LASTATTACKEFFECT(TEXT("/Game/ParagonGreystone/FX/Particles/Greystone/Abilities/LeapAOE/FX/P_Greystone_LeapAOE_GroundSmash.P_Greystone_LeapAOE_GroundSmash"));
+	if (P_HITEFFECT.Succeeded())
+	{
+		LastAttack->SetTemplate(P_LASTATTACKEFFECT.Object);
+		LastAttack->bAutoActivate = false;
 	}
 
 	RootComponent = Weapon;
 	HitEffect->SetupAttachment(RootComponent);
+	LastAttack->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -39,7 +48,9 @@ void ADSWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	HitEffect->OnSystemFinished.AddDynamic(this, &ADSWeapon::OnEffectFinished);
+	HitEffect->OnSystemFinished.AddDynamic(this, &ADSWeapon::OnHitEffectFinished);
+	LastAttack->OnSystemFinished.AddDynamic(this, &ADSWeapon::OnLastAttackEffectFinished);
+
 }
 
 // Called every frame
@@ -54,8 +65,18 @@ void ADSWeapon::PlayHitEffect()
 	HitEffect->Activate(true);
 }
 
-void ADSWeapon::OnEffectFinished(UParticleSystemComponent * PSystem)
+void ADSWeapon::OnHitEffectFinished(UParticleSystemComponent* PSystem)
 {
-	PSystem->Activate(false);
+	HitEffect->Activate(false);
 }
 
+
+void ADSWeapon::PlayLastAttackEffect()
+{
+	LastAttack->Activate(true);
+}
+
+void ADSWeapon::OnLastAttackEffectFinished(UParticleSystemComponent* PSystem)
+{
+	LastAttack->Activate(false);
+}

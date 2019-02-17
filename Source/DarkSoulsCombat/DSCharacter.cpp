@@ -4,7 +4,6 @@
 #include "DrawDebugHelpers.h"
 #include "Components/WidgetComponent.h"
 #include "DSAIController.h"
-
 #include "DSAnimInstance.h"
 
 // Sets default values
@@ -67,6 +66,18 @@ ADSCharacter::ADSCharacter()
 	}
 
 
+	static ConstructorHelpers::FObjectFinder<USoundCue> SC_AttackSoundCue(TEXT("/Game/Weapon_Pack/SwordSound/A_Sword_Swing_Cue.A_Sword_Swing_Cue"));
+	if (SC_AttackSoundCue.Succeeded())
+	{
+		AttackSoundCue = SC_AttackSoundCue.Object;
+		AttackSoundCueComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AttackSoundCueComponent"));
+		AttackSoundCueComponent->SetupAttachment(RootComponent);
+	
+
+	}
+
+	
+
 	// 콤보공격을 위한 변수
 	IsAttacking = false; // 현재 공격 몽타주 실행중인지 파악
 	MaxCombo = 4; // 콤보공격 단계 최대치
@@ -98,8 +109,18 @@ void ADSCharacter::PostInitializeComponents()
 			// 현재 섹션을 보내준다
 			// 말이 현재 섹션이지 AttackStartComboState 함수 거쳐서 오면 다음으로 넘어갈 섹션 넘버
 			DSAnim->JumpToAttackMontageSection(CurrentCombo);
+
+			if (AttackSoundCueComponent && AttackSoundCue)
+			{
+				AttackSoundCueComponent->Play(0.f);
+			}
+
 		}
 
+	});
+
+	DSAnim->OnLastAttack.AddLambda([this]() -> void {
+		CurWeapon->PlayLastAttackEffect();
 	});
 }
 
@@ -114,6 +135,12 @@ void ADSCharacter::BeginPlay()
 	if (nullptr != CurWeapon)
 	{
 		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket_RightHand_Weapon);
+	}
+
+	if (AttackSoundCueComponent && AttackSoundCue)
+	{
+		AttackSoundCueComponent->SetSound(Cast<USoundBase>(AttackSoundCue));
+
 	}
 }
 
@@ -478,6 +505,7 @@ void ADSCharacter::Attack()
 		if (CanNextCombo)
 		{
 			IsComboInputOn = true;
+
 		}
 	}
 	else
@@ -487,7 +515,14 @@ void ADSCharacter::Attack()
 		DSAnim->PlayAttackMontage();
 		DSAnim->JumpToAttackMontageSection(CurrentCombo);
 		IsAttacking = true;
+
+		if (AttackSoundCueComponent && AttackSoundCue)
+		{
+			AttackSoundCueComponent->Play(0.f);
+		}
 	}
+
+
 }
 
 void ADSCharacter::AttackCheck()
