@@ -65,17 +65,23 @@ ADSCharacter::ADSCharacter()
 		GetMesh()->SetAnimInstanceClass(StartPack_Anim.Class);
 	}
 
-
+	// 공격 소리
 	static ConstructorHelpers::FObjectFinder<USoundCue> SC_AttackSoundCue(TEXT("/Game/Weapon_Pack/SwordSound/A_Sword_Swing_Cue.A_Sword_Swing_Cue"));
 	if (SC_AttackSoundCue.Succeeded())
 	{
 		AttackSoundCue = SC_AttackSoundCue.Object;
-		AttackSoundCueComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AttackSoundCueComponent"));
-		AttackSoundCueComponent->SetupAttachment(RootComponent);
-	
-
+		AttackAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AttackAudioComponent"));
+		AttackAudioComponent->SetupAttachment(RootComponent);
 	}
 
+	// 걷기 소리
+	static ConstructorHelpers::FObjectFinder<USoundCue> SC_FootStepSoundCue(TEXT("/Game/AnimStarterPack/Sound/A_Character_Step_Cue.A_Character_Step_Cue"));
+	if (SC_FootStepSoundCue.Succeeded())
+	{
+		FootStepSoundCue = SC_FootStepSoundCue.Object;
+		FootStepAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("FootStepAudioComponent"));
+		FootStepAudioComponent->SetupAttachment(RootComponent);
+	}
 	
 
 	// 콤보공격을 위한 변수
@@ -110,9 +116,9 @@ void ADSCharacter::PostInitializeComponents()
 			// 말이 현재 섹션이지 AttackStartComboState 함수 거쳐서 오면 다음으로 넘어갈 섹션 넘버
 			DSAnim->JumpToAttackMontageSection(CurrentCombo);
 
-			if (AttackSoundCueComponent && AttackSoundCue)
+			if (AttackAudioComponent && AttackSoundCue)
 			{
-				AttackSoundCueComponent->Play(0.f);
+				AttackAudioComponent->Play(0.f);
 			}
 
 		}
@@ -137,11 +143,16 @@ void ADSCharacter::BeginPlay()
 		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket_RightHand_Weapon);
 	}
 
-	if (AttackSoundCueComponent && AttackSoundCue)
+	if (AttackAudioComponent && AttackSoundCue)
 	{
-		AttackSoundCueComponent->SetSound(Cast<USoundBase>(AttackSoundCue));
-
+		AttackAudioComponent->SetSound(Cast<USoundBase>(AttackSoundCue));
 	}
+
+	if (FootStepAudioComponent && FootStepSoundCue)
+	{
+		FootStepAudioComponent->SetSound(Cast<USoundBase>(FootStepSoundCue));
+	}
+
 }
 
 
@@ -516,9 +527,9 @@ void ADSCharacter::Attack()
 		DSAnim->JumpToAttackMontageSection(CurrentCombo);
 		IsAttacking = true;
 
-		if (AttackSoundCueComponent && AttackSoundCue)
+		if (AttackAudioComponent && AttackSoundCue)
 		{
-			AttackSoundCueComponent->Play(0.f);
+			AttackAudioComponent->Play(0.f);
 		}
 	}
 

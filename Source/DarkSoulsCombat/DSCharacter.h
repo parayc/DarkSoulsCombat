@@ -65,6 +65,7 @@ public:
 	void AttackStartComboState();
 	void AttackEndComboState();
 
+	UAudioComponent* FootStepAudioComponent;
 
 private:
 	EControlMode eControlMode = EControlMode::eNomal;
@@ -83,9 +84,18 @@ private:
 	void GetTarget();
 
 	void RadialDetection(float DeltaTime);
+	
+	// 걷기 사운드 큐
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Sounds, Meta = (AllowPrivateAccess = true))
+	USoundCue* FootStepSoundCue;
+
+
+
 
 	UPROPERTY()
 	class UDSAnimInstance* DSAnim;
+
+
 
 
 
@@ -111,7 +121,7 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		USoundCue* AttackSoundCue;
 
-	UAudioComponent* AttackSoundCueComponent;
+	UAudioComponent* AttackAudioComponent;
 
 
 

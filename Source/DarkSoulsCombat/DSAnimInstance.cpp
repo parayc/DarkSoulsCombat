@@ -70,7 +70,6 @@ void UDSAnimInstance::AnimNotify_NextAttackCheck()
 	OnNextAttackCheck.Broadcast();
 }
 
-
 void UDSAnimInstance::AnimNotify_LastAttack()
 {
 	DSLOG_S(Warning);
@@ -85,4 +84,14 @@ FName UDSAnimInstance::GetAttackMontageSectionName(int32 Section)
 
 	// Attack1~3 까지의 섹션이름에 맞는 섹션 네임 만들어서 리턴해주는 함수
 	return FName(*FString::Printf(TEXT("Attack%d"), Section));
+}
+
+void UDSAnimInstance::AnimNotify_RightPlant()
+{
+	DSLOG_S(Warning);
+}
+
+void UDSAnimInstance::AnimNotify_LeftPlant()
+{
+	DSLOG_S(Warning);
 }

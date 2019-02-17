@@ -57,6 +57,12 @@ private:
 	UFUNCTION()
 	void AnimNotify_LastAttack();
 
+	UFUNCTION()
+	void AnimNotify_RightPlant();
+
+	UFUNCTION()
+	void AnimNotify_LeftPlant();
+
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* AttackMontage;
