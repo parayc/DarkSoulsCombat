@@ -555,9 +555,61 @@ void ADSCharacter::AttackCheck()
 		if (HitResult.Actor.IsValid())
 		{
 			DSLOG(Warning, TEXT("Hit Actor Name : %s"), *HitResult.Actor->GetName());
+			
+			FDamageEvent DamageEvent;
+			// 데미지를 가하는 진정한 가해자는 폰이아니라 플레이어 컨트롤이다!!
+			// 파리미터 앞에서부터 데미지량, 데미지 종류, 공격 명령을 내린 가.해.자는 플레이어 컨트롤러, 사용한 도구는 폰(캐릭터)
+			// 플레이어 컨트롤러라는 가해자가 폰이라는 가해도구를 이용해서 공격한 것
+			HitResult.Actor->TakeDamage(50.0f, DamageEvent, GetController(), this);
+			
 			CurWeapon->PlayHitEffect();
 		}
 	}
+}
+
+float ADSCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
+{
+	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+
+	FVector VictimDir = GetActorLocation() - (GetActorLocation() + GetActorForwardVector());
+	FVector AttackerDir = DamageCauser->GetActorLocation() - (DamageCauser->GetActorLocation() + DamageCauser->GetActorForwardVector());
+	
+	float DotFB = FVector::DotProduct(VictimDir.GetSafeNormal(), AttackerDir.GetSafeNormal());
+	if (DotFB >= -1 && DotFB < -0.7)
+	{
+		DSLOG(Warning, TEXT("Front"));
+		//프론트 공격 애니메이션 실행하고 리턴
+		DSAnim->PlayHitReactionFront();
+		return FinalDamage;
+	}
+	else if (DotFB >= 0.7 && DotFB < 1)
+	{
+		DSLOG(Warning, TEXT("Back"));
+		//백 공격 애니메이션 실행하고 리턴
+		DSAnim->PlayHitReactionBack();
+		return FinalDamage;
+	}
+
+	FVector CorssFB = FVector::CrossProduct(VictimDir.GetSafeNormal(), AttackerDir.GetSafeNormal());
+	if (CorssFB.Z < 0)
+	{
+		DSLOG(Warning, TEXT("Right"));
+		//Right 공격 애니메이션 실행하고 리턴
+		DSAnim->PlayHitReactionLeft();
+		return FinalDamage;
+	}
+	else if (CorssFB.Z > 0)
+	{
+		DSLOG(Warning, TEXT("Left"));
+		//Left 공격 애니메이션 실행하고 리턴
+		DSAnim->PlayHitReactionRight();
+		return FinalDamage;
+	}
+
+	DSLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage);
+	return FinalDamage;
+	
 }
 
 

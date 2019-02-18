@@ -27,6 +27,11 @@ public:
 
 	void PlayAttackMontage();
 
+	void PlayHitReactionFront();
+	void PlayHitReactionBack();
+	void PlayHitReactionLeft();
+	void PlayHitReactionRight();
+
 	// 콤보 공격관련 함수
 	void JumpToAttackMontageSection(int32 NewSection);
 
@@ -36,10 +41,15 @@ public:
 	FOnNextAttackCheckDelegate OnNextAttackCheck;
 	FOnLastAttackDelegate		OnLastAttack;
 
+	void SetHitDirection(float fValue);
+
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	float fCurrentPawnSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	float fHitDirection;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	bool bIsInAir;
@@ -66,6 +76,18 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* AttackMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Hit, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* HitReactionFront;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Hit, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* HitReactionBack;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Hit, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* HitReactionLeft;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Hit, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* HitReactionRight;
 
 
 };

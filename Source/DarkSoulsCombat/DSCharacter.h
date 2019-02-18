@@ -51,12 +51,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	ADSCharacter* CameraTarget;
 
-
-
-	
-
 	virtual void PostInitializeComponents() override;
-
 
 	// 공격 관련
 	void Attack();
@@ -66,6 +61,9 @@ public:
 	void AttackEndComboState();
 
 	UAudioComponent* FootStepAudioComponent;
+
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
 
 private:
 	EControlMode eControlMode = EControlMode::eNomal;

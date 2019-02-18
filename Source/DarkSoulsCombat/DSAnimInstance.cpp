@@ -14,6 +14,29 @@ UDSAnimInstance::UDSAnimInstance()
 		AttackMontage = ATTACK_MONTAGE.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> HIT_REACTION_FRONT(TEXT("/Game/JogMoveAnim/DS_HitReaction_Front.DS_HitReaction_Front"));
+	if (HIT_REACTION_FRONT.Succeeded())
+	{
+		HitReactionFront = HIT_REACTION_FRONT.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> HIT_REACTION_BACK(TEXT("/Game/JogMoveAnim/DS_HitReaction_Back.DS_HitReaction_Back"));
+	if (HIT_REACTION_BACK.Succeeded())
+	{
+		HitReactionBack = HIT_REACTION_BACK.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> HIT_REACTION_LEFT(TEXT("/Game/JogMoveAnim/DS_HitReaction_Left.DS_HitReaction_Left"));
+	if (HIT_REACTION_LEFT.Succeeded())
+	{
+		HitReactionLeft = HIT_REACTION_LEFT.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> HIT_REACTION_RIGHT(TEXT("/Game/JogMoveAnim/DS_HitReaction_Right.DS_HitReaction_Right"));
+	if (HIT_REACTION_RIGHT.Succeeded())
+	{
+		HitReactionRight = HIT_REACTION_RIGHT.Object;
+	}
 }
 
 void UDSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -46,6 +69,39 @@ void UDSAnimInstance::PlayAttackMontage()
 		Montage_Play(AttackMontage, 1.0f);
 	}
 }
+
+void UDSAnimInstance::PlayHitReactionFront()
+{
+	if (!Montage_IsPlaying(HitReactionFront))
+	{
+		Montage_Play(HitReactionFront, 1.0f);
+	}
+}
+
+void UDSAnimInstance::PlayHitReactionBack()
+{
+	if (!Montage_IsPlaying(HitReactionBack))
+	{
+		Montage_Play(HitReactionBack, 1.0f);
+	}
+}
+
+void UDSAnimInstance::PlayHitReactionLeft()
+{
+	if (!Montage_IsPlaying(HitReactionLeft))
+	{
+		Montage_Play(HitReactionLeft, 1.0f);
+	}
+}
+
+void UDSAnimInstance::PlayHitReactionRight()
+{
+	if (!Montage_IsPlaying(HitReactionRight))
+	{
+		Montage_Play(HitReactionRight, 1.0f);
+	}
+}
+
 
 void UDSAnimInstance::JumpToAttackMontageSection(int32 NewSection)
 {
@@ -94,4 +150,9 @@ void UDSAnimInstance::AnimNotify_RightPlant()
 void UDSAnimInstance::AnimNotify_LeftPlant()
 {
 	DSLOG_S(Warning);
+}
+
+void UDSAnimInstance::SetHitDirection(float fValue)
+{
+	fHitDirection = fValue;
 }
