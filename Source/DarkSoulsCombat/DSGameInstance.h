@@ -37,7 +37,6 @@ public:
 };
 
 
-
 UCLASS()
 class DARKSOULSCOMBAT_API UDSGameInstance : public UGameInstance
 {
@@ -48,4 +47,9 @@ public:
 	UDSGameInstance();
 
 	virtual void Init() override;
+	FDSCharacterData* GetDSCharacterData(int32 Level);
+
+private:
+	UPROPERTY()
+	class UDataTable* DSCharacterTable;
 };

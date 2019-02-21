@@ -87,8 +87,8 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Sounds, Meta = (AllowPrivateAccess = true))
 	USoundCue* FootStepSoundCue;
 
-
-
+	UPROPERTY(VisibleAnywhere, Category = Stat)
+	class UDSCharacterStatComponent* CharacterStat;
 
 	UPROPERTY()
 	class UDSAnimInstance* DSAnim;
