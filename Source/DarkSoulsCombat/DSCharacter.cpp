@@ -3,6 +3,7 @@
 #include "DSCharacter.h"
 #include "DrawDebugHelpers.h"
 #include "Components/WidgetComponent.h"
+#include "DSCharacterStatComponent.h"
 #include "DSAIController.h"
 #include "DSAnimInstance.h"
 
@@ -11,6 +12,8 @@ ADSCharacter::ADSCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	LastAttacker = nullptr;
 
 	AIControllerClass = ADSAIController::StaticClass();
 	// 자동으로 플레어아가 소유한 캐릭터를 제외하고는 AICotroller가 소유하도록 설정
@@ -22,11 +25,14 @@ ADSCharacter::ADSCharacter()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
 	TargetUI = CreateDefaultSubobject<UWidgetComponent>(TEXT("TARGETUI"));
-
+	HPBarUI = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARUI"));
+	// 캐릭터 스텟
+	CharacterStat = CreateDefaultSubobject<UDSCharacterStatComponent>(TEXT("CHARACTERSTAT"));
 
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
 	TargetUI->SetupAttachment(GetMesh());
+	HPBarUI->SetupAttachment(GetMesh());
 	
 	// TargetLockOn UI를 모든 캐릭터마다 만들고 그 숨김을 기본으로 해놓는다.
 	TargetUI->SetRelativeLocation(FVector(0.0f, 0.0f, 130.0f));
@@ -39,6 +45,18 @@ ADSCharacter::ADSCharacter()
 	}
 
 	TargetUI->SetHiddenInGame(true);
+
+	HPBarUI->SetRelativeLocation(FVector(0.0f, 0.0f, 190.0f));
+	HPBarUI->SetWidgetSpace(EWidgetSpace::Screen);
+	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HPBAR(TEXT("/Game/UI/UI_HPBar.UI_HPBar_C"));
+	if (UI_HPBAR.Succeeded())
+	{
+		HPBarUI->SetWidgetClass(UI_HPBAR.Class);
+		HPBarUI->SetDrawSize(FVector2D(150.0f, 50.0f));
+	}
+
+
+
 
 	// 소프트웨어 3차원 좌표계와 언리얼 엔진 3차원 좌표계가 달라서 맞춰주려고 -90,
 	// 언리얼엔진에서 엑터의 기준위치는 엑터의 정중앙이지만 캐릭터 에셋은 발바닥부터 그렇기 절반 높이 -
@@ -84,6 +102,9 @@ ADSCharacter::ADSCharacter()
 	}
 	
 
+
+
+
 	// 콤보공격을 위한 변수
 	IsAttacking = false; // 현재 공격 몽타주 실행중인지 파악
 	MaxCombo = 4; // 콤보공격 단계 최대치
@@ -127,6 +148,13 @@ void ADSCharacter::PostInitializeComponents()
 
 	DSAnim->OnLastAttack.AddLambda([this]() -> void {
 		CurWeapon->PlayLastAttackEffect();
+	});
+
+	CharacterStat->OnHPIsZero.AddLambda([this]() -> void {
+		DSAnim->SetDeadAnim(true);
+		SetActorEnableCollision(false);
+		TargetUI->SetHiddenInGame(true);
+		LastAttacker->Target();
 	});
 }
 
@@ -560,7 +588,7 @@ void ADSCharacter::AttackCheck()
 			// 데미지를 가하는 진정한 가해자는 폰이아니라 플레이어 컨트롤이다!!
 			// 파리미터 앞에서부터 데미지량, 데미지 종류, 공격 명령을 내린 가.해.자는 플레이어 컨트롤러, 사용한 도구는 폰(캐릭터)
 			// 플레이어 컨트롤러라는 가해자가 폰이라는 가해도구를 이용해서 공격한 것
-			HitResult.Actor->TakeDamage(50.0f, DamageEvent, GetController(), this);
+			HitResult.Actor->TakeDamage(CharacterStat->GetAttack(), DamageEvent, GetController(), this);
 			
 			CurWeapon->PlayHitEffect();
 		}
@@ -570,8 +598,12 @@ void ADSCharacter::AttackCheck()
 float ADSCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	CharacterStat->SetDamage(FinalDamage);
 
+	// 마지막으로 공격한 사람이 누군지 확인하기 위해서
+	LastAttacker = Cast<ADSCharacter>(DamageCauser);
 
+	// 가해자의 방향을 알기위해서
 	FVector VictimDir = GetActorLocation() - (GetActorLocation() + GetActorForwardVector());
 	FVector AttackerDir = DamageCauser->GetActorLocation() - (DamageCauser->GetActorLocation() + DamageCauser->GetActorForwardVector());
 	
@@ -636,3 +668,4 @@ void ADSCharacter::AttackEndComboState()
 	CanNextCombo = false; // 다음 콤보로 이동 가능 여부
 	CurrentCombo = 0; // 현재 콤보 0번으로
 }
+

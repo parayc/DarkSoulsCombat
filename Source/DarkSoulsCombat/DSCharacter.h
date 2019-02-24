@@ -48,8 +48,15 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = UI)
 	class UWidgetComponent* TargetUI;
 
+	UPROPERTY(VisibleAnywhere, Category = UI)
+	class UWidgetComponent* HPBarUI;
+
 	UPROPERTY(BlueprintReadOnly)
 	ADSCharacter* CameraTarget;
+
+	//// 캐릭터 스텟 가져오기
+	//UPROPERTY(BlueprintReadOnly)
+	//class UDSCharacterStatComponent* CharacterStat;
 
 	virtual void PostInitializeComponents() override;
 
@@ -63,10 +70,17 @@ public:
 	UAudioComponent* FootStepAudioComponent;
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	
+	UPROPERTY(VisibleAnywhere, Category = Stat)
+	class UDSCharacterStatComponent* CharacterStat;
+	
 
 
 private:
 	EControlMode eControlMode = EControlMode::eNomal;
+
+	ADSCharacter* LastAttacker;
+
 
 	// PlayerInput
 	void UpDown(float NewAxisValue);
@@ -87,14 +101,8 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Sounds, Meta = (AllowPrivateAccess = true))
 	USoundCue* FootStepSoundCue;
 
-	UPROPERTY(VisibleAnywhere, Category = Stat)
-	class UDSCharacterStatComponent* CharacterStat;
-
 	UPROPERTY()
 	class UDSAnimInstance* DSAnim;
-
-
-
 
 
 	// 공격 관련

@@ -19,5 +19,6 @@ void UDSGameInstance::Init()
 
 FDSCharacterData * UDSGameInstance::GetDSCharacterData(int32 Level)
 {
+	// 캐릭터 스탯 데이터를 가져오는 것 같음
 	return DSCharacterTable->FindRow<FDSCharacterData>(*FString::FromInt(Level), TEXT(""));
 }

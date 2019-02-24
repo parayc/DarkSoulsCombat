@@ -4,9 +4,10 @@
 
 UDSAnimInstance::UDSAnimInstance()
 {
-	float fCurrentPawnSpeed = 0.0f;
-	float fDirection = 0.0f;
-	bool bIsInAir = false;
+	fCurrentPawnSpeed = 0.0f;
+	fDirection = 0.0f;
+	bIsInAir = false;
+	IsDead = false;
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(TEXT("/Game/AnimStarterPack/DSCharactor_AttackMontage.DSCharactor_AttackMontage"));
 	if (ATTACK_MONTAGE.Succeeded())
@@ -46,7 +47,11 @@ void UDSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	// 틱에서 폰 가져오기
 	APawn* pPawn = TryGetPawnOwner();
 
-	if (::IsValid(pPawn))
+	// 오브젝트가 사용가능한 상태인지 확인해주는 함수 사용가능하면 True;
+	if (!::IsValid(pPawn)) return; // 사용불가능하면 리턴
+
+
+	if (!IsDead)
 	{
 		fCurrentPawnSpeed = pPawn->GetVelocity().Size();
 		ACharacter* pCharacter = Cast<ACharacter>(pPawn);
@@ -64,6 +69,7 @@ void UDSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UDSAnimInstance::PlayAttackMontage()
 {
+	DSCHECK(!IsDead);
 	if (!Montage_IsPlaying(AttackMontage))
 	{
 		Montage_Play(AttackMontage, 1.0f);
@@ -72,6 +78,7 @@ void UDSAnimInstance::PlayAttackMontage()
 
 void UDSAnimInstance::PlayHitReactionFront()
 {
+	DSCHECK(!IsDead);
 	if (!Montage_IsPlaying(HitReactionFront))
 	{
 		Montage_Play(HitReactionFront, 1.0f);
@@ -80,6 +87,7 @@ void UDSAnimInstance::PlayHitReactionFront()
 
 void UDSAnimInstance::PlayHitReactionBack()
 {
+	DSCHECK(!IsDead);
 	if (!Montage_IsPlaying(HitReactionBack))
 	{
 		Montage_Play(HitReactionBack, 1.0f);
@@ -88,6 +96,7 @@ void UDSAnimInstance::PlayHitReactionBack()
 
 void UDSAnimInstance::PlayHitReactionLeft()
 {
+	DSCHECK(!IsDead);
 	if (!Montage_IsPlaying(HitReactionLeft))
 	{
 		Montage_Play(HitReactionLeft, 1.0f);
@@ -96,15 +105,16 @@ void UDSAnimInstance::PlayHitReactionLeft()
 
 void UDSAnimInstance::PlayHitReactionRight()
 {
+	DSCHECK(!IsDead);
 	if (!Montage_IsPlaying(HitReactionRight))
 	{
 		Montage_Play(HitReactionRight, 1.0f);
 	}
 }
 
-
 void UDSAnimInstance::JumpToAttackMontageSection(int32 NewSection)
 {
+	DSCHECK(!IsDead);
 	//DSCHECK(Montage_IsPlaying(AttackMontage))
 
 	// 다음 몽타주 섹션으로 넘어가기
@@ -155,4 +165,9 @@ void UDSAnimInstance::AnimNotify_LeftPlant()
 void UDSAnimInstance::SetHitDirection(float fValue)
 {
 	fHitDirection = fValue;
+}
+
+void UDSAnimInstance::SetDeadAnim(bool bValue)
+{
+	IsDead = bValue;
 }
