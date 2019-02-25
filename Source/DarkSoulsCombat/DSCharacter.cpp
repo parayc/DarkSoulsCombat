@@ -6,6 +6,7 @@
 #include "DSCharacterStatComponent.h"
 #include "DSAIController.h"
 #include "DSAnimInstance.h"
+#include "DSCharacterWidget.h"
 
 // Sets default values
 ADSCharacter::ADSCharacter()
@@ -156,6 +157,9 @@ void ADSCharacter::PostInitializeComponents()
 		TargetUI->SetHiddenInGame(true);
 		LastAttacker->Target();
 	});
+
+
+
 }
 
 // Called when the game starts or when spawned
@@ -181,6 +185,12 @@ void ADSCharacter::BeginPlay()
 		FootStepAudioComponent->SetSound(Cast<USoundBase>(FootStepSoundCue));
 	}
 
+	// 이거 왜 BeginPlay()에서 해야하지??
+	auto CharacterWidget = Cast<UDSCharacterWidget>(HPBarUI->GetUserWidgetObject());
+	if (nullptr != CharacterWidget)
+	{
+		CharacterWidget->BindCharacterStat(CharacterStat);
+	}
 }
 
 
@@ -267,6 +277,8 @@ void ADSCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted
 	}*/
 	IsAttacking = false;
 	AttackEndComboState();
+
+	OnAttackEnd.Broadcast();
 }
 
 
@@ -669,3 +681,17 @@ void ADSCharacter::AttackEndComboState()
 	CurrentCombo = 0; // 현재 콤보 0번으로
 }
 
+void ADSCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (IsPlayerControlled())
+	{
+		SetControlMode(EControlMode::eNomal);
+		GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+	}
+}

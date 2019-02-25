@@ -14,6 +14,8 @@ enum class EControlMode
 	eDarkSouls = 1
 };
 
+DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
+
 UCLASS()
 class DARKSOULSCOMBAT_API ADSCharacter : public ACharacter
 {
@@ -67,10 +69,13 @@ public:
 	void AttackStartComboState();
 	void AttackEndComboState();
 
+	FOnAttackEndDelegate OnAttackEnd;
+
 	UAudioComponent* FootStepAudioComponent;
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
-	
+	virtual void PossessedBy(AController* NewController) override;
+
 	UPROPERTY(VisibleAnywhere, Category = Stat)
 	class UDSCharacterStatComponent* CharacterStat;
 	

@@ -8,6 +8,7 @@
 
 const FName ADSAIController::HomePosKey(TEXT("HomePos"));
 const FName ADSAIController::PatrolPosKey(TEXT("PatrolPos"));
+const FName ADSAIController::TargetKey(TEXT("Target"));
 
 ADSAIController::ADSAIController()
 {

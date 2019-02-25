@@ -7,6 +7,7 @@
 #include "DSCharacterStatComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnHPIsZeroDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnHPChangeDelegate);
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -25,9 +26,12 @@ protected:
 public:	
 	void SetNewLevel(int32 NewLevel);
 	void SetDamage(float NewDamage);
+	void SetHP(float NewHP);
+	float GetHPRatio();
 	float GetAttack();
 
 	FOnHPIsZeroDelegate OnHPIsZero;
+	FOnHPChangeDelegate OnHPChanged;
 
 private:
 	struct FDSCharacterData* CurrentStatData = nullptr;

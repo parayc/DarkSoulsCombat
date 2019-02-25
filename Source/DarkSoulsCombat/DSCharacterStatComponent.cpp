@@ -49,7 +49,8 @@ void UDSCharacterStatComponent::SetNewLevel(int32 NewLevel)
 	if (nullptr != CurrentStatData)
 	{
 		Level = NewLevel;
-		CurrentHP = CurrentStatData->MaxHP;
+		SetHP(CurrentStatData->MaxHP);
+		DSLOG(Warning, TEXT("Level dsadasdasdsat"));
 	}
 	else
 	{
@@ -60,11 +61,12 @@ void UDSCharacterStatComponent::SetNewLevel(int32 NewLevel)
 void UDSCharacterStatComponent::SetDamage(float NewDamage)
 {
 	DSCHECK(nullptr != CurrentStatData);
-	CurrentHP = FMath::Clamp<float>(CurrentHP - NewDamage, 0.0f, CurrentStatData->MaxHP);
-	if (CurrentHP <= 0.0f)
-	{
-		OnHPIsZero.Broadcast();
-	}
+	SetHP(FMath::Clamp<float>(CurrentHP - NewDamage, 0.0f, CurrentStatData->MaxHP));
+	//CurrentHP = FMath::Clamp<float>(CurrentHP - NewDamage, 0.0f, CurrentStatData->MaxHP);
+	//if (CurrentHP <= 0.0f)
+	//{
+	//	OnHPIsZero.Broadcast();
+	//}
 }
 
 float UDSCharacterStatComponent::GetAttack()
@@ -73,3 +75,22 @@ float UDSCharacterStatComponent::GetAttack()
 	return CurrentStatData->Attack;
 }
 
+void UDSCharacterStatComponent::SetHP(float NewHP)
+{
+	CurrentHP = NewHP;
+	OnHPChanged.Broadcast();
+	if (CurrentHP < KINDA_SMALL_NUMBER)
+	{
+		CurrentHP = 0.0f;
+		OnHPIsZero.Broadcast();
+	}
+}
+
+float UDSCharacterStatComponent::GetHPRatio()
+{
+	DSCHECK(nullptr != CurrentStatData, 0.0f);
+
+	// KINDA_SMALL_NUMBER 0이 아니지만 0과 정말 얼마 차이안나는 0.000~1과 같은 수를 그냥 0으로 보겠다 같은 내용에 쓴다
+	// 0.0, 0.1, 0.2 ~ 1.0 까지 범위 나타내려고
+	return (CurrentStatData->MaxHP < KINDA_SMALL_NUMBER) ? 0.0f : (CurrentHP / CurrentStatData->MaxHP);
+}
