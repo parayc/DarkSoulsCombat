@@ -11,7 +11,8 @@
 enum class EControlMode
 {
 	eNomal = 0,
-	eDarkSouls = 1
+	eDarkSouls = 1,
+	eNPC = 2
 };
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
@@ -79,7 +80,10 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Stat)
 	class UDSCharacterStatComponent* CharacterStat;
 	
+	// 범위내에서 가장 가까이 있는 놈 얻어오기
+	void GetTarget();
 
+	void Target();
 
 private:
 	EControlMode eControlMode = EControlMode::eNomal;
@@ -93,13 +97,10 @@ private:
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 	void ModeChange();
-	void Target();
+
 
 	void SetControlMode(EControlMode eControlMode);
 	
-	// 범위내에서 가장 가까이 있는 놈 얻어오기
-	void GetTarget();
-
 	void RadialDetection(float DeltaTime);
 	
 	// 걷기 사운드 큐

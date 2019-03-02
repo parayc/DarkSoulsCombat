@@ -14,6 +14,14 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
 
+	bool nResult = rand() % 2;
+
+	if (!nResult)
+	{
+		return EBTNodeResult::Failed;
+	}
+
+
 	auto DSCharacter = Cast<ADSCharacter>(OwnerComp.GetAIOwner()->GetPawn());
 	if (nullptr == DSCharacter)
 	{

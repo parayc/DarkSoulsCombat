@@ -58,6 +58,11 @@ void UDSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 		// 바라보는 방향과 움직이는 방향의 사이 각도를 반환해줌
 		fDirection = CalculateDirection(pCharacter->GetVelocity(), pCharacter->GetActorRotation());
+		if (pCharacter->IsPlayerControlled())
+		{
+			DSLOG(Warning, TEXT("%f"), fDirection);
+			DSLOG(Warning, TEXT("%f"), fCurrentPawnSpeed);
+		}
 
 		// 공중에 떠있는지 확인
 		if (pCharacter)

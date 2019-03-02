@@ -199,6 +199,21 @@ void ADSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!IsPlayerControlled())
+	{
+		if (CameraTarget != nullptr)
+		{
+			bUseControllerRotationYaw = false;
+			GetCharacterMovement()->bOrientRotationToMovement = false;
+
+			FVector TargetVect = CameraTarget->GetActorLocation() - GetActorLocation();
+			FRotator TargetRot = TargetVect.GetSafeNormal().Rotation();
+			FRotator CurrentRot = GetActorRotation();
+			FRotator NewRot = FMath::RInterpTo(CurrentRot, TargetRot, DeltaTime, 10.f);
+
+			SetActorRotation(NewRot);
+		}
+	}
 
 	RadialDetection(DeltaTime);
 
@@ -328,6 +343,7 @@ void ADSCharacter::SetControlMode(EControlMode eMode)
 
 	case EControlMode::eNomal:
 	{
+		eControlMode = EControlMode::eNomal;
 
 		// 컨트롤 회전의 Yaw축과 Pawn의 Yaw과 연동시켜줄지 확인하는 기능 true면 연동
 		// 예를들어 이걸 false로 지정하면 카메라가 좌우로 움직여도 카메라 시점만 이동하고
@@ -343,6 +359,8 @@ void ADSCharacter::SetControlMode(EControlMode eMode)
 
 	case EControlMode::eDarkSouls:
 	{
+		eControlMode = EControlMode::eDarkSouls;
+
 		bUseControllerRotationYaw = true;
 		GetCharacterMovement()->bOrientRotationToMovement = false;
 		GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
@@ -409,18 +427,21 @@ void ADSCharacter::RadialDetection(float DeltaTime)
 
 	// 이것은 틱마다 계솔 돌아가야하는 기느잉 맞아
 	// 카메라가 타겟을 바라보도록 만드는 부분
-	if (CameraTarget != nullptr)
+
+	if (IsPlayerControlled())
 	{
-		FVector TargetVect = CameraTarget->GetActorLocation() - GetActorLocation();
-		FRotator TargetRot = TargetVect.GetSafeNormal().Rotation();
-		FRotator CurrentRot = GetControlRotation();
-		FRotator NewRot = FMath::RInterpTo(CurrentRot, TargetRot, DeltaTime, 10.f);
+		if (CameraTarget != nullptr)
+		{
+			FVector TargetVect = CameraTarget->GetActorLocation() - GetActorLocation();
+			FRotator TargetRot = TargetVect.GetSafeNormal().Rotation();
+			FRotator CurrentRot = GetControlRotation();
+			FRotator NewRot = FMath::RInterpTo(CurrentRot, TargetRot, DeltaTime, 10.f);
 
-		// 컨트롤러의(마우스 방향)시점 과 캐릭터의 시선방향이 일치하는 옵션을 켜놓았기에 컨트롤러의 방향을 정해주면 캐릭터가 자동으로 그곳을 바라본다.
-		GetController()->SetControlRotation(NewRot);
+			// 컨트롤러의(마우스 방향)시점 과 캐릭터의 시선방향이 일치하는 옵션을 켜놓았기에 컨트롤러의 방향을 정해주면 캐릭터가 자동으로 그곳을 바라본다.
+			GetController()->SetControlRotation(NewRot);
 
+		}
 	}
-
 	//else if (CameraTarget != nullptr)
 	//{
 	//	CameraTarget = nullptr;
@@ -432,6 +453,8 @@ void ADSCharacter::RadialDetection(float DeltaTime)
 void ADSCharacter::Target()
 {
 	GetTarget();
+
+	if (!IsPlayerControlled()) return;
 
 	if (CameraTarget != nullptr)
 	{
@@ -692,6 +715,7 @@ void ADSCharacter::PossessedBy(AController* NewController)
 	}
 	else
 	{
-		GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+		eControlMode = EControlMode::eNPC;
+		GetCharacterMovement()->MaxWalkSpeed = 360.0f;
 	}
 }
