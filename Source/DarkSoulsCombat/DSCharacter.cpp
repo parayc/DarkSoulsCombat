@@ -231,6 +231,10 @@ void ADSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction(TEXT("ModeChange"), EInputEvent::IE_Pressed, this, &ADSCharacter::ModeChange);
 	PlayerInputComponent->BindAction(TEXT("Target"), EInputEvent::IE_Pressed, this, &ADSCharacter::Target);
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ADSCharacter::Attack);
+	PlayerInputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Pressed, this, &ADSCharacter::StartRun);
+	PlayerInputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Released, this, &ADSCharacter::StopRun);
+	PlayerInputComponent->BindAction(TEXT("ForwardRoll"), EInputEvent::IE_Pressed, this, &ADSCharacter::ForwardRoll);
+	
 }
 
 void ADSCharacter::UpDown(float NewAxisValue)
@@ -718,4 +722,21 @@ void ADSCharacter::PossessedBy(AController* NewController)
 		eControlMode = EControlMode::eNPC;
 		GetCharacterMovement()->MaxWalkSpeed = 360.0f;
 	}
+}
+
+void ADSCharacter::StartRun()
+{
+	DSAnim->SetRunInputCheck(true);
+	GetCharacterMovement()->MaxWalkSpeed = 900.0f;
+}
+
+void ADSCharacter::StopRun()
+{
+	DSAnim->SetRunInputCheck(false);
+	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+}
+
+void ADSCharacter::ForwardRoll()
+{
+
 }

@@ -43,6 +43,7 @@ public:
 
 	void SetHitDirection(float fValue);
 	void SetDeadAnim(bool bValue);
+	void SetRunInputCheck(bool bValue);
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
@@ -59,6 +60,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	float fDirection;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	bool bRunInputCheck;
 
 	// 다음 콤보로 이어질 수 있는 구간인 NextAttackCheck 노티파이 발생시 호출 함수
 	UFUNCTION()

@@ -8,6 +8,7 @@ UDSAnimInstance::UDSAnimInstance()
 	fDirection = 0.0f;
 	bIsInAir = false;
 	IsDead = false;
+	bRunInputCheck = false;
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(TEXT("/Game/AnimStarterPack/DSCharactor_AttackMontage.DSCharactor_AttackMontage"));
 	if (ATTACK_MONTAGE.Succeeded())
@@ -175,4 +176,9 @@ void UDSAnimInstance::SetHitDirection(float fValue)
 void UDSAnimInstance::SetDeadAnim(bool bValue)
 {
 	IsDead = bValue;
+}
+
+void UDSAnimInstance::SetRunInputCheck(bool bValue)
+{
+	bRunInputCheck = bValue;
 }

@@ -97,7 +97,9 @@ private:
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 	void ModeChange();
-
+	void StartRun();
+	void StopRun();
+	void ForwardRoll();
 
 	void SetControlMode(EControlMode eControlMode);
 	
