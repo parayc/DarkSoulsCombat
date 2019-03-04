@@ -7,20 +7,13 @@
 UBTTask_Attack::UBTTask_Attack()
 {
 	bNotifyTick = true;
+	nAttackCnt = 0;
 	IsAttacking = false;
 }
 
 EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
-
-	bool nResult = rand() % 2;
-
-	if (!nResult)
-	{
-		return EBTNodeResult::Failed;
-	}
-
 
 	auto DSCharacter = Cast<ADSCharacter>(OwnerComp.GetAIOwner()->GetPawn());
 	if (nullptr == DSCharacter)
@@ -33,6 +26,8 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	DSCharacter->OnAttackEnd.AddLambda([this]() -> void {
 		IsAttacking = false;
 	});
+
+	nAttackCnt = rand() % 4;
 
 	return EBTNodeResult::InProgress;
 }

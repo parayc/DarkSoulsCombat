@@ -60,8 +60,8 @@ void UDSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		fDirection = CalculateDirection(pCharacter->GetVelocity(), pCharacter->GetActorRotation());
 		if (pCharacter->IsPlayerControlled())
 		{
-			DSLOG(Warning, TEXT("%f"), fDirection);
-			DSLOG(Warning, TEXT("%f"), fCurrentPawnSpeed);
+			//DSLOG(Warning, TEXT("%f"), fDirection);
+			//DSLOG(Warning, TEXT("%f"), fCurrentPawnSpeed);
 		}
 
 		// 공중에 떠있는지 확인

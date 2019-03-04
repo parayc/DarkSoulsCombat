@@ -209,7 +209,7 @@ void ADSCharacter::Tick(float DeltaTime)
 			FVector TargetVect = CameraTarget->GetActorLocation() - GetActorLocation();
 			FRotator TargetRot = TargetVect.GetSafeNormal().Rotation();
 			FRotator CurrentRot = GetActorRotation();
-			FRotator NewRot = FMath::RInterpTo(CurrentRot, TargetRot, DeltaTime, 10.f);
+			FRotator NewRot = FMath::RInterpTo(CurrentRot, TargetRot, DeltaTime, 100.f);
 
 			SetActorRotation(NewRot);
 		}
