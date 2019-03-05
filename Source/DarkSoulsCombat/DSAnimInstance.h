@@ -44,8 +44,12 @@ public:
 	void SetHitDirection(float fValue);
 	void SetDeadAnim(bool bValue);
 	void SetRunInputCheck(bool bValue);
+	void PlayRollMontage();
 
 private:
+
+	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	float fCurrentPawnSpeed;
 
@@ -95,6 +99,32 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Hit, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* HitReactionRight;
+
+	// Rolling
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = DodgeRoll, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* RollBackward;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = DodgeRoll, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* RollBackwardLeft;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = DodgeRoll, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* RollBackwardRight;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = DodgeRoll, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* RollForward;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = DodgeRoll, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* RollForwardLeft;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = DodgeRoll, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* RollForwardRight;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = DodgeRoll, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* RollLeft;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = DodgeRoll, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* RollRight;
+
 
 
 };

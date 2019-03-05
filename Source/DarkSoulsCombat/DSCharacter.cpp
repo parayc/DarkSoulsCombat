@@ -241,9 +241,6 @@ void ADSCharacter::UpDown(float NewAxisValue)
 {
 	if (IsAttacking)
 	{
-
-
-
 		return;
 	}
 
@@ -260,6 +257,8 @@ void ADSCharacter::LeftRight(float NewAxisValue)
 	{
 		return;
 	}
+
+
 
 	// GetActorRightVector() 액터의 옆방향 값 가져오기
 	//AddMovementInput(GetActorRightVector(), NewAxisValue);
@@ -287,6 +286,8 @@ void ADSCharacter::Turn(float NewAxisValue)
 
 void ADSCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
+
+
 	DSCHECK(IsAttacking);
 	DSCHECK(CurrentCombo > 0);
 	/*
@@ -317,6 +318,7 @@ void ADSCharacter::ModeChange()
 
 void ADSCharacter::SetControlMode(EControlMode eMode)
 {
+
 	// 길이 설정
 	SpringArm->TargetArmLength = 450.f;
 
@@ -738,5 +740,5 @@ void ADSCharacter::StopRun()
 
 void ADSCharacter::ForwardRoll()
 {
-
+	DSAnim->PlayRollMontage();
 }

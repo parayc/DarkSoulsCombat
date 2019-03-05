@@ -10,6 +10,9 @@ UDSAnimInstance::UDSAnimInstance()
 	IsDead = false;
 	bRunInputCheck = false;
 
+
+	
+
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(TEXT("/Game/AnimStarterPack/DSCharactor_AttackMontage.DSCharactor_AttackMontage"));
 	if (ATTACK_MONTAGE.Succeeded())
 	{
@@ -39,6 +42,57 @@ UDSAnimInstance::UDSAnimInstance()
 	{
 		HitReactionRight = HIT_REACTION_RIGHT.Object;
 	}
+
+
+
+	//Rolling
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_BACKWARD(TEXT("/Game/RollsAndDodges/Animations/InPlace/DS_RollBackward_InPlace_Montage.DS_RollBackward_InPlace_Montage"));
+	if (ROLL_BACKWARD.Succeeded())
+	{
+		RollBackward = ROLL_BACKWARD.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_BACKWARD_LEFT(TEXT("/Game/RollsAndDodges/Animations/InPlace/DS_RollBackwardLeft_InPlace_Montage.DS_RollBackwardLeft_InPlace_Montage"));
+	if (ROLL_BACKWARD_LEFT.Succeeded())
+	{
+		RollBackwardLeft = ROLL_BACKWARD_LEFT.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_BACKWARD_RIGHT(TEXT("/Game/RollsAndDodges/Animations/InPlace/DS_RollBackwardRight_InPlace_Montage.DS_RollBackwardRight_InPlace_Montage"));
+	if (ROLL_BACKWARD_RIGHT.Succeeded())
+	{
+		RollBackwardRight = ROLL_BACKWARD_RIGHT.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_FORWAD(TEXT("/Game/RollsAndDodges/Animations/InPlace/DS_RollForward_InPlace_Montage.DS_RollForward_InPlace_Montage"));
+	if (ROLL_FORWAD.Succeeded())
+	{
+		RollForward = ROLL_FORWAD.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_FORWADLEFT(TEXT("/Game/RollsAndDodges/Animations/InPlace/DS_RollForwardLeft_InPlace_Montage.DS_RollForwardLeft_InPlace_Montage"));
+	if (ROLL_FORWADLEFT.Succeeded())
+	{
+		RollForwardLeft = ROLL_FORWADLEFT.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_FORWADRIGHT(TEXT("/Game/RollsAndDodges/Animations/InPlace/DS_RollForwardRight_InPlace_Montage.DS_RollForwardRight_InPlace_Montage"));
+	if (ROLL_FORWADRIGHT.Succeeded())
+	{
+		RollForwardRight = ROLL_FORWADRIGHT.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_LEFT(TEXT("/Game/RollsAndDodges/Animations/InPlace/DS_RollLeft_InPlace_Montage.DS_RollLeft_InPlace_Montage"));
+	if (ROLL_LEFT.Succeeded())
+	{
+		RollLeft = ROLL_LEFT.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_RIGHT(TEXT("/Game/RollsAndDodges/Animations/InPlace/DS_RollRight_InPlace_Montage.DS_RollRight_InPlace_Montage"));
+	if (ROLL_RIGHT.Succeeded())
+	{
+		RollRight = ROLL_RIGHT.Object;
+	}
 }
 
 void UDSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -47,18 +101,26 @@ void UDSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	// 틱에서 폰 가져오기
 	APawn* pPawn = TryGetPawnOwner();
-
+	
 	// 오브젝트가 사용가능한 상태인지 확인해주는 함수 사용가능하면 True;
 	if (!::IsValid(pPawn)) return; // 사용불가능하면 리턴
-
 
 	if (!IsDead)
 	{
 		fCurrentPawnSpeed = pPawn->GetVelocity().Size();
+		
 		ACharacter* pCharacter = Cast<ACharacter>(pPawn);
 
 		// 바라보는 방향과 움직이는 방향의 사이 각도를 반환해줌
 		fDirection = CalculateDirection(pCharacter->GetVelocity(), pCharacter->GetActorRotation());
+
+	
+		
+		if (pCharacter->IsPlayerControlled())
+		{
+			DSLOG(Warning, TEXT("%f, %f, %f"), pCharacter->GetActorLocation().X, pCharacter->GetActorLocation().Y, pCharacter->GetActorLocation().Z);
+		}
+
 		if (pCharacter->IsPlayerControlled())
 		{
 			//DSLOG(Warning, TEXT("%f"), fDirection);
@@ -117,6 +179,71 @@ void UDSAnimInstance::PlayHitReactionRight()
 		Montage_Play(HitReactionRight, 1.0f);
 	}
 }
+
+void UDSAnimInstance::PlayRollMontage()
+{
+	APawn* pPawn = TryGetPawnOwner();
+
+	if (!::IsValid(pPawn)) return; // 사용불가능하면 리턴
+
+	ACharacter* pCharacter = Cast<ACharacter>(pPawn);
+
+	int nMoveForward = pCharacter->InputComponent->GetAxisValue(TEXT("MoveForward"));
+	int nMoveRight   = pCharacter->InputComponent->GetAxisValue(TEXT("MoveRight"));
+
+	DSCHECK(!IsDead);
+	
+	if ( Montage_IsPlaying(RollBackwardLeft) || Montage_IsPlaying(RollBackwardRight) || Montage_IsPlaying(RollForwardLeft) || Montage_IsPlaying(RollForwardRight) || Montage_IsPlaying(RollBackward) || Montage_IsPlaying(RollForward) || Montage_IsPlaying(RollLeft) || Montage_IsPlaying(RollRight) )
+	{
+		return;
+	}
+
+	// 먼저 대각선들부터 확인해야함.
+	if (nMoveForward == -1 && nMoveRight == -1)
+	{
+		Montage_Play(RollBackwardLeft, 1.0f);
+		return;
+	}
+	else if (nMoveForward == -1 && nMoveRight == 1)
+	{
+		Montage_Play(RollBackwardRight, 1.0f);
+		return;
+	}
+	else if (nMoveForward == 1 && nMoveRight == -1)
+	{
+		Montage_Play(RollForwardLeft, 1.0f);
+		return;
+	}
+	else if (nMoveForward == 1 && nMoveRight == 1)
+	{
+		Montage_Play(RollForwardRight, 1.0f);
+		return;
+	}
+	
+	// 단방향
+	else if (nMoveForward == -1)
+	{
+		Montage_Play(RollBackward, 1.0f);
+		return;
+	}
+	else if (nMoveForward == 1)
+	{
+		Montage_Play(RollForward, 1.0f);
+		return;
+	}
+	else if (nMoveRight == -1)
+	{
+		Montage_Play(RollLeft, 1.0f);
+		return;
+	}
+	else if (nMoveRight == 1)
+	{
+		Montage_Play(RollRight, 1.0f);
+		return;
+	}
+
+}
+
 
 void UDSAnimInstance::JumpToAttackMontageSection(int32 NewSection)
 {
@@ -182,3 +309,4 @@ void UDSAnimInstance::SetRunInputCheck(bool bValue)
 {
 	bRunInputCheck = bValue;
 }
+

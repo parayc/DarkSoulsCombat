@@ -89,6 +89,8 @@ private:
 	EControlMode eControlMode = EControlMode::eNomal;
 
 	ADSCharacter* LastAttacker;
+	
+	int32 nCurrentInputDir;
 
 
 	// PlayerInput
