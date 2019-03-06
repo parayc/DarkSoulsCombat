@@ -85,6 +85,11 @@ public:
 
 	void Target();
 
+	bool IsCharacterAttacking();
+	
+	EControlMode GetCurrentControlMode();
+
+
 private:
 	EControlMode eControlMode = EControlMode::eNomal;
 

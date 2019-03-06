@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "DSAnimInstance.h"
+#include "DSCharacter.h"
 
 UDSAnimInstance::UDSAnimInstance()
 {
@@ -43,52 +44,50 @@ UDSAnimInstance::UDSAnimInstance()
 		HitReactionRight = HIT_REACTION_RIGHT.Object;
 	}
 
-
-
 	//Rolling
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_BACKWARD(TEXT("/Game/RollsAndDodges/Animations/InPlace/DS_RollBackward_InPlace_Montage.DS_RollBackward_InPlace_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_BACKWARD(TEXT("/Game/RollsAndDodges/Animations/RootMotion/DS_RollBackward_Root_Montage.DS_RollBackward_Root_Montage"));
 	if (ROLL_BACKWARD.Succeeded())
 	{
 		RollBackward = ROLL_BACKWARD.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_BACKWARD_LEFT(TEXT("/Game/RollsAndDodges/Animations/InPlace/DS_RollBackwardLeft_InPlace_Montage.DS_RollBackwardLeft_InPlace_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_BACKWARD_LEFT(TEXT("/Game/RollsAndDodges/Animations/RootMotion/DS_RollBackwardLeft_Root_Montage.DS_RollBackwardLeft_Root_Montage"));
 	if (ROLL_BACKWARD_LEFT.Succeeded())
 	{
 		RollBackwardLeft = ROLL_BACKWARD_LEFT.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_BACKWARD_RIGHT(TEXT("/Game/RollsAndDodges/Animations/InPlace/DS_RollBackwardRight_InPlace_Montage.DS_RollBackwardRight_InPlace_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_BACKWARD_RIGHT(TEXT("/Game/RollsAndDodges/Animations/RootMotion/DS_RollBackwardRight_Root_Montage.DS_RollBackwardRight_Root_Montage"));
 	if (ROLL_BACKWARD_RIGHT.Succeeded())
 	{
 		RollBackwardRight = ROLL_BACKWARD_RIGHT.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_FORWAD(TEXT("/Game/RollsAndDodges/Animations/InPlace/DS_RollForward_InPlace_Montage.DS_RollForward_InPlace_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_FORWAD(TEXT("/Game/RollsAndDodges/Animations/RootMotion/DS_RollForward_Root_Montage.DS_RollForward_Root_Montage"));
 	if (ROLL_FORWAD.Succeeded())
 	{
 		RollForward = ROLL_FORWAD.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_FORWADLEFT(TEXT("/Game/RollsAndDodges/Animations/InPlace/DS_RollForwardLeft_InPlace_Montage.DS_RollForwardLeft_InPlace_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_FORWADLEFT(TEXT("/Game/RollsAndDodges/Animations/RootMotion/DS_RollForwardLeft_Root_Montage.DS_RollForwardLeft_Root_Montage"));
 	if (ROLL_FORWADLEFT.Succeeded())
 	{
 		RollForwardLeft = ROLL_FORWADLEFT.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_FORWADRIGHT(TEXT("/Game/RollsAndDodges/Animations/InPlace/DS_RollForwardRight_InPlace_Montage.DS_RollForwardRight_InPlace_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_FORWADRIGHT(TEXT("/Game/RollsAndDodges/Animations/RootMotion/DS_RollForwardRight_Root_Montage.DS_RollForwardRight_Root_Montage"));
 	if (ROLL_FORWADRIGHT.Succeeded())
 	{
 		RollForwardRight = ROLL_FORWADRIGHT.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_LEFT(TEXT("/Game/RollsAndDodges/Animations/InPlace/DS_RollLeft_InPlace_Montage.DS_RollLeft_InPlace_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_LEFT(TEXT("/Game/RollsAndDodges/Animations/RootMotion/DS_RollLeft_Root_Montage.DS_RollLeft_Root_Montage"));
 	if (ROLL_LEFT.Succeeded())
 	{
 		RollLeft = ROLL_LEFT.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_RIGHT(TEXT("/Game/RollsAndDodges/Animations/InPlace/DS_RollRight_InPlace_Montage.DS_RollRight_InPlace_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_RIGHT(TEXT("/Game/RollsAndDodges/Animations/RootMotion/DS_RollRight_Root_Montage.DS_RollRight_Root_Montage"));
 	if (ROLL_RIGHT.Succeeded())
 	{
 		RollRight = ROLL_RIGHT.Object;
@@ -186,15 +185,38 @@ void UDSAnimInstance::PlayRollMontage()
 
 	if (!::IsValid(pPawn)) return; // 사용불가능하면 리턴
 
-	ACharacter* pCharacter = Cast<ACharacter>(pPawn);
+	ADSCharacter* pCharacter = Cast<ADSCharacter>(pPawn);
 
 	int nMoveForward = pCharacter->InputComponent->GetAxisValue(TEXT("MoveForward"));
 	int nMoveRight   = pCharacter->InputComponent->GetAxisValue(TEXT("MoveRight"));
 
+	// 노말 모드일때 구르기 방향을 설정하기 위해서
+	//FVector vecCurrentDir;
+	//vecCurrentDir.X = nMoveForward;
+	//vecCurrentDir.Y = nMoveRight;
+	//vecCurrentDir.Z = 0;
+	//
+	//FRotator InputRotator;
+	//InputRotator.Pitch = 0;
+	//InputRotator.Roll = 0;
+	//InputRotator.Yaw = pCharacter->GetControlRotation().Yaw;
+	//
+	//if (vecCurrentDir.Size() > 0)
+	//{
+	//	pCharacter->SetActorRotation(InputRotator);
+	//}
+
 	DSCHECK(!IsDead);
 	
-	if ( Montage_IsPlaying(RollBackwardLeft) || Montage_IsPlaying(RollBackwardRight) || Montage_IsPlaying(RollForwardLeft) || Montage_IsPlaying(RollForwardRight) || Montage_IsPlaying(RollBackward) || Montage_IsPlaying(RollForward) || Montage_IsPlaying(RollLeft) || Montage_IsPlaying(RollRight) )
+	if (IsRolling() || pCharacter->IsCharacterAttacking())
 	{
+		return;
+	}
+
+	// 노말이라면 정면구르기뿐이 안되지
+	if (pCharacter->GetCurrentControlMode() == EControlMode::eNomal)
+	{
+		Montage_Play(RollForward, 1.0f);
 		return;
 	}
 
@@ -310,3 +332,14 @@ void UDSAnimInstance::SetRunInputCheck(bool bValue)
 	bRunInputCheck = bValue;
 }
 
+bool UDSAnimInstance::IsRolling()
+{
+	bool bResult = false;
+
+	if (Montage_IsPlaying(RollBackwardLeft) || Montage_IsPlaying(RollBackwardRight) || Montage_IsPlaying(RollForwardLeft) || Montage_IsPlaying(RollForwardRight) || Montage_IsPlaying(RollBackward) || Montage_IsPlaying(RollForward) || Montage_IsPlaying(RollLeft) || Montage_IsPlaying(RollRight))
+	{
+		bResult = true;
+	}
+
+	return bResult;
+}

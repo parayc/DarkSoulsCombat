@@ -577,6 +577,11 @@ NextAttackCheck 노티파이 발생전에
 // 일반공격 함수
 void ADSCharacter::Attack()
 {
+	if (DSAnim->IsRolling() == true)
+	{
+		return;
+	}
+
 	// 공격중이라면 첫회 공격차에서는 여기 안탐 2번째 콤보부터 탐
 	if (IsAttacking)
 	{
@@ -741,4 +746,22 @@ void ADSCharacter::StopRun()
 void ADSCharacter::ForwardRoll()
 {
 	DSAnim->PlayRollMontage();
+}
+
+EControlMode ADSCharacter::GetCurrentControlMode()
+{
+	return eControlMode;
+}
+
+// 변수 IsAttacking이랑은 호환이 안되나?
+bool ADSCharacter::IsCharacterAttacking()
+{
+	bool bResult = false;
+
+	if (IsAttacking)
+	{
+		bResult = true;
+	}
+
+	return bResult;
 }

@@ -45,6 +45,8 @@ public:
 	void SetDeadAnim(bool bValue);
 	void SetRunInputCheck(bool bValue);
 	void PlayRollMontage();
+	bool IsRolling();
+
 
 private:
 
