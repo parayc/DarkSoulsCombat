@@ -25,7 +25,7 @@ public:
 	//Æ½¸¶´Ù È£ÃâµÊ 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	void PlayAttackMontage();
+	void PlayAttackMontage(int nValue);
 
 	void PlayHitReactionFront();
 	void PlayHitReactionBack();
@@ -33,7 +33,7 @@ public:
 	void PlayHitReactionRight();
 
 	// ÄÞº¸ °ø°Ý°ü·Ã ÇÔ¼ö
-	void JumpToAttackMontageSection(int32 NewSection);
+	void JumpToAttackMontageSection(int32 NewSection, int32 nAttackComboType);
 
 	FName GetAttackMontageSectionName(int32 Section);
 
@@ -46,7 +46,9 @@ public:
 	void SetRunInputCheck(bool bValue);
 	void PlayRollMontage();
 	bool IsRolling();
+	bool FunctionIsDead();
 
+	bool GetRunInputCheck();
 
 private:
 
@@ -88,7 +90,22 @@ private:
 
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	UAnimMontage* AttackMontage;
+	UAnimMontage* AttackMontage_old;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* AttackMontage_Combo01;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* AttackMontage_Combo02;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* AttackMontage_Combo03;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* AttackMontage_Combo04;
+
+
+
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Hit, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* HitReactionFront;

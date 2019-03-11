@@ -9,7 +9,8 @@
 UBTService_Detect::UBTService_Detect()
 {
 	NodeName = TEXT("Detect");
-	Interval = 1.0f;
+	Interval = 0.3f;
+	vecPursueHomePosKey = FVector::ZeroVector;
 }
 
 void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -19,9 +20,16 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	APawn* ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
 	if (nullptr == ControllingPawn) return;
 
+	ADSCharacter* Character = Cast<ADSCharacter>(ControllingPawn);
+
+	if (Character->FunctionIsDead())
+	{
+		return;
+	}
+
 	UWorld* World = ControllingPawn->GetWorld();
 	FVector Center = ControllingPawn->GetActorLocation();
-	float DetectRadius = 600.0f;
+	float DetectRadius = 800.0f;
 
 	TArray<FOverlapResult> OverlapResults;
 	FCollisionQueryParams CollisionQueryParam(NAME_None, false, ControllingPawn);
@@ -34,6 +42,23 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 		CollisionQueryParam
 	);
 
+	float fDistanceFromPursueHomePosToTarget = (ControllingPawn->GetActorLocation() - vecPursueHomePosKey).Size();
+
+	if (fDistanceFromPursueHomePosToTarget >= 1500.f)
+	{
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(ADSAIController::IsPursueMaxRangeKey, true);
+
+		UObject* DSCharacter = OwnerComp.GetBlackboardComponent()->GetValueAsObject(ADSAIController::TargetKey);
+
+		if (DSCharacter != nullptr)
+		{
+			OwnerComp.GetBlackboardComponent()->SetValueAsObject(ADSAIController::TargetKey, nullptr);
+		}
+	}
+	else
+	{
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(ADSAIController::IsPursueMaxRangeKey, false);
+	}
 
 	if (bResult)
 	{
@@ -45,10 +70,19 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 				OwnerComp.GetBlackboardComponent()->SetValueAsObject(ADSAIController::TargetKey, DSCharacter);
 
 				// 시점을 타겟에 고정하고 좌우 움직임
-				ADSCharacter* Character = Cast<ADSCharacter>(ControllingPawn);
+			
 				Character->Target();
 
+				if (vecPursueHomePosKey.Size() == 0)
+				{
+					OwnerComp.GetBlackboardComponent()->SetValueAsVector(ADSAIController::PursueHomePosKey, ControllingPawn->GetActorLocation());
+					vecPursueHomePosKey = ControllingPawn->GetActorLocation();
+				}
 
+				//ture 면 combat
+				OwnerComp.GetBlackboardComponent()->SetValueAsBool(ADSAIController::AIStateKey, true);
+
+				
 
 				//Character->bUseControllerRotationYaw = true;
 				//Character->GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -63,8 +97,16 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	}
 	else
 	{
-		OwnerComp.GetBlackboardComponent()->SetValueAsObject(ADSAIController::TargetKey, nullptr);
+		//OwnerComp.GetBlackboardComponent()->SetValueAsObject(ADSAIController::TargetKey, nullptr);
+		Character->Target();
+		Character->SetControlMode(EControlMode::eNomal);
+		vecPursueHomePosKey = FVector::ZeroVector;
+		// Patrol
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(ADSAIController::AIStateKey, false);
+		OwnerComp.GetBlackboardComponent()->SetValueAsVector(ADSAIController::PursueHomePosKey, vecPursueHomePosKey);
 	}
+
+
 
 
 

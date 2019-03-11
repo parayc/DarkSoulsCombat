@@ -89,6 +89,16 @@ public:
 	
 	EControlMode GetCurrentControlMode();
 
+	void StartRun();
+	void StopRun();
+
+
+	bool GetRunInputCheck();
+	void SetControlMode(EControlMode eControlMode);
+	
+	bool FunctionIsDead();
+
+
 
 private:
 	EControlMode eControlMode = EControlMode::eNomal;
@@ -96,6 +106,8 @@ private:
 	ADSCharacter* LastAttacker;
 	
 	int32 nCurrentInputDir;
+	
+	int32 nAttackComboType;
 
 
 	// PlayerInput
@@ -104,11 +116,9 @@ private:
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 	void ModeChange();
-	void StartRun();
-	void StopRun();
 	void ForwardRoll();
 
-	void SetControlMode(EControlMode eControlMode);
+
 	
 	void RadialDetection(float DeltaTime);
 	
@@ -144,6 +154,5 @@ private:
 
 	UAudioComponent* AttackAudioComponent;
 
-
-
+	
 };

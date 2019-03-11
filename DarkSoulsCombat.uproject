@@ -14,5 +14,11 @@
 				"UMG"
 			]
 		}
+	],
+	"Plugins": [
+		{
+			"Name": "PythonScriptPlugin",
+			"Enabled": true
+		}
 	]
 }

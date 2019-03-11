@@ -6,6 +6,7 @@
 #include "BehaviorTree/BTService.h"
 #include "BTService_Detect.generated.h"
 
+
 /**
  * 
  */
@@ -20,4 +21,5 @@ public :
 protected:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
+	FVector vecPursueHomePosKey;
 };

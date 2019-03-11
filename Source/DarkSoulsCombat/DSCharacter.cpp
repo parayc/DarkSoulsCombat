@@ -8,6 +8,7 @@
 #include "DSAnimInstance.h"
 #include "DSCharacterWidget.h"
 
+
 // Sets default values
 ADSCharacter::ADSCharacter()
 {
@@ -111,6 +112,8 @@ ADSCharacter::ADSCharacter()
 	MaxCombo = 4; // 콤보공격 단계 최대치
 	AttackEndComboState(); // 공격이 끝나면 콤보공격 관련된 변수 초기화해주려고
 
+	nAttackComboType = 1;
+
 
 	SetControlMode(eControlMode);
 }
@@ -136,7 +139,7 @@ void ADSCharacter::PostInitializeComponents()
 			AttackStartComboState();
 			// 현재 섹션을 보내준다
 			// 말이 현재 섹션이지 AttackStartComboState 함수 거쳐서 오면 다음으로 넘어갈 섹션 넘버
-			DSAnim->JumpToAttackMontageSection(CurrentCombo);
+			DSAnim->JumpToAttackMontageSection(CurrentCombo, nAttackComboType);
 
 			if (AttackAudioComponent && AttackSoundCue)
 			{
@@ -153,6 +156,8 @@ void ADSCharacter::PostInitializeComponents()
 
 	CharacterStat->OnHPIsZero.AddLambda([this]() -> void {
 		DSAnim->SetDeadAnim(true);
+
+		//GetCharacterMovement()->DisableMovement();
 		SetActorEnableCollision(false);
 		TargetUI->SetHiddenInGame(true);
 		LastAttacker->Target();
@@ -199,21 +204,25 @@ void ADSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!IsPlayerControlled())
-	{
-		if (CameraTarget != nullptr)
-		{
-			bUseControllerRotationYaw = false;
-			GetCharacterMovement()->bOrientRotationToMovement = false;
+	
 
-			FVector TargetVect = CameraTarget->GetActorLocation() - GetActorLocation();
-			FRotator TargetRot = TargetVect.GetSafeNormal().Rotation();
-			FRotator CurrentRot = GetActorRotation();
-			FRotator NewRot = FMath::RInterpTo(CurrentRot, TargetRot, DeltaTime, 100.f);
+	//if (!IsPlayerControlled())
+	//{
+	//	if (CameraTarget != nullptr)
+	//	{
+	//		bUseControllerRotationYaw = false;
+	//		GetCharacterMovement()->bOrientRotationToMovement = false;
 
-			SetActorRotation(NewRot);
-		}
-	}
+	//		FVector TargetVect = CameraTarget->GetActorLocation() - GetActorLocation();
+	//		FRotator TargetRot = TargetVect.GetSafeNormal().Rotation();
+	//		FRotator CurrentRot = GetActorRotation();
+	//		FRotator NewRot = FMath::RInterpTo(CurrentRot, TargetRot, DeltaTime, 100.f);
+
+	//		SetActorRotation(NewRot);
+	//	}
+	//}
+
+
 
 	RadialDetection(DeltaTime);
 
@@ -286,8 +295,6 @@ void ADSCharacter::Turn(float NewAxisValue)
 
 void ADSCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
-
-
 	DSCHECK(IsAttacking);
 	DSCHECK(CurrentCombo > 0);
 	/*
@@ -532,7 +539,10 @@ void ADSCharacter::GetTarget()
 			// 타겟이 정해졌다면 타겟의 TargetLockOn UI를 oN
 			if (CameraTarget != nullptr)
 			{
-				CameraTarget->TargetUI->SetHiddenInGame(false);
+				if (IsPlayerControlled())
+				{
+					CameraTarget->TargetUI->SetHiddenInGame(false);
+				}
 			}
 		}
 	}
@@ -597,8 +607,8 @@ void ADSCharacter::Attack()
 	{
 		DSCHECK(CurrentCombo == 0);
 		AttackStartComboState();
-		DSAnim->PlayAttackMontage();
-		DSAnim->JumpToAttackMontageSection(CurrentCombo);
+		DSAnim->PlayAttackMontage(nAttackComboType);
+		DSAnim->JumpToAttackMontageSection(CurrentCombo, nAttackComboType);
 		IsAttacking = true;
 
 		if (AttackAudioComponent && AttackSoundCue)
@@ -734,14 +744,36 @@ void ADSCharacter::PossessedBy(AController* NewController)
 void ADSCharacter::StartRun()
 {
 	DSAnim->SetRunInputCheck(true);
-	GetCharacterMovement()->MaxWalkSpeed = 900.0f;
+	
+	if (IsPlayerControlled())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 900.0f;
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 800.0f;
+	}
 }
 
 void ADSCharacter::StopRun()
 {
 	DSAnim->SetRunInputCheck(false);
-	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+
+	if (IsPlayerControlled())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 360.0f;
+	}
 }
+
+bool ADSCharacter::GetRunInputCheck()
+{
+	return DSAnim->GetRunInputCheck();
+}
+
 
 void ADSCharacter::ForwardRoll()
 {
@@ -764,4 +796,9 @@ bool ADSCharacter::IsCharacterAttacking()
 	}
 
 	return bResult;
+}
+
+bool ADSCharacter::FunctionIsDead()
+{
+	return DSAnim->FunctionIsDead();
 }

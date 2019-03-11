@@ -2,3 +2,5 @@ Content/ParagonGreystone/ filter=lfs diff=lfs merge=lfs -text
 Content/Weapon_Pack filter=lfs diff=lfs merge=lfs -text
 Content/VFX_Toolkit_V1 filter=lfs diff=lfs merge=lfs -text
 Content/RollsAndDodges filter=lfs diff=lfs merge=lfs -text
+Content/Frank_RPG_Warrior filter=lfs diff=lfs merge=lfs -text
+Plugins/Binaries filter=lfs diff=lfs merge=lfs -text

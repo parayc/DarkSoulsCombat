@@ -13,12 +13,40 @@ UDSAnimInstance::UDSAnimInstance()
 
 
 	
-
+	// 공격
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(TEXT("/Game/AnimStarterPack/DSCharactor_AttackMontage.DSCharactor_AttackMontage"));
 	if (ATTACK_MONTAGE.Succeeded())
 	{
-		AttackMontage = ATTACK_MONTAGE.Object;
+		AttackMontage_old = ATTACK_MONTAGE.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_COMBO_01_MONTAGE(TEXT("/Game/Frank_RPG_Warrior/Animations/DS_Mannequin_RM/DS_Frank_RPG_Warrior_Combo01_Montage.DS_Frank_RPG_Warrior_Combo01_Montage"));
+	if (ATTACK_COMBO_01_MONTAGE.Succeeded())
+	{
+		AttackMontage_Combo01 = ATTACK_COMBO_01_MONTAGE.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_COMBO_02_MONTAGE(TEXT("/Game/AnimStarterPack/DSCharactor_AttackMontage.DSCharactor_AttackMontage"));
+	if (ATTACK_COMBO_02_MONTAGE.Succeeded())
+	{
+		AttackMontage_Combo02 = ATTACK_COMBO_02_MONTAGE.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_COMBO_03_MONTAGE(TEXT("/Game/AnimStarterPack/DSCharactor_AttackMontage.DSCharactor_AttackMontage"));
+	if (ATTACK_COMBO_03_MONTAGE.Succeeded())
+	{
+		AttackMontage_Combo03 = ATTACK_COMBO_03_MONTAGE.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_COMBO_04_MONTAGE(TEXT("/Game/AnimStarterPack/DSCharactor_AttackMontage.DSCharactor_AttackMontage"));
+	if (ATTACK_COMBO_04_MONTAGE.Succeeded())
+	{
+		AttackMontage_Combo04 = ATTACK_COMBO_04_MONTAGE.Object;
+	}
+
+
+
+
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> HIT_REACTION_FRONT(TEXT("/Game/JogMoveAnim/DS_HitReaction_Front.DS_HitReaction_Front"));
 	if (HIT_REACTION_FRONT.Succeeded())
@@ -63,6 +91,8 @@ UDSAnimInstance::UDSAnimInstance()
 		RollBackwardRight = ROLL_BACKWARD_RIGHT.Object;
 	}
 
+
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_FORWAD(TEXT("/Game/Frank_RPG_Warrior/Animations/DS_Mannequin_RM/DS_Frank_RPG_Warrior_Combo03_All_Montage.DS_Frank_RPG_Warrior_Combo03_All_Montage"));
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_FORWAD(TEXT("/Game/RollsAndDodges/Animations/RootMotion/DS_RollForward_Root_Montage.DS_RollForward_Root_Montage"));
 	if (ROLL_FORWAD.Succeeded())
 	{
@@ -134,13 +164,61 @@ void UDSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
-void UDSAnimInstance::PlayAttackMontage()
+void UDSAnimInstance::PlayAttackMontage(int nValue)
 {
 	DSCHECK(!IsDead);
-	if (!Montage_IsPlaying(AttackMontage))
+
+	switch (nValue)
 	{
-		Montage_Play(AttackMontage, 1.0f);
+	case 0:
+	{	
+		if (!Montage_IsPlaying(AttackMontage_old))
+		{
+			Montage_Play(AttackMontage_old, 1.0f);
+			break;
+		}
 	}
+
+	case 1:
+	{
+		if (!Montage_IsPlaying(AttackMontage_Combo01))
+		{
+			Montage_Play(AttackMontage_Combo01, 1.0f);
+			break;
+		}
+	}
+
+	case 2:
+	{
+		if (!Montage_IsPlaying(AttackMontage_Combo02))
+		{
+			Montage_Play(AttackMontage_Combo02, 1.0f);
+			break;
+		}
+	}
+
+	case 3:
+	{
+		if (!Montage_IsPlaying(AttackMontage_Combo03))
+		{
+			Montage_Play(AttackMontage_Combo03, 1.0f);
+			break;
+		}
+	}
+
+	case 4:
+	{
+		if (!Montage_IsPlaying(AttackMontage_Combo04))
+		{
+			Montage_Play(AttackMontage_Combo04, 1.0f);
+			break;
+		}
+	}
+
+	}
+	
+
+
 }
 
 void UDSAnimInstance::PlayHitReactionFront()
@@ -267,14 +345,38 @@ void UDSAnimInstance::PlayRollMontage()
 }
 
 
-void UDSAnimInstance::JumpToAttackMontageSection(int32 NewSection)
+void UDSAnimInstance::JumpToAttackMontageSection(int32 NewSection, int32 nAttackComboType)
 {
 	DSCHECK(!IsDead);
 	//DSCHECK(Montage_IsPlaying(AttackMontage))
 
 	// 다음 몽타주 섹션으로 넘어가기
 	// 매개변수 (넘어갈 섹션 문자열, 해당 몽타주)
-	Montage_JumpToSection(GetAttackMontageSectionName(NewSection), AttackMontage);
+
+	switch (nAttackComboType)
+	{
+
+	case 0:
+		Montage_JumpToSection(GetAttackMontageSectionName(NewSection), AttackMontage_old);
+		break;
+	case 1:
+		Montage_JumpToSection(GetAttackMontageSectionName(NewSection), AttackMontage_Combo01);
+		break;
+	case 2:
+		Montage_JumpToSection(GetAttackMontageSectionName(NewSection), AttackMontage_Combo02);
+		break;
+	case 3:
+		Montage_JumpToSection(GetAttackMontageSectionName(NewSection), AttackMontage_Combo03);
+		break;
+	case 4:
+		Montage_JumpToSection(GetAttackMontageSectionName(NewSection), AttackMontage_Combo04);
+		break;
+
+	default:
+		break;
+	}
+
+	
 }
 
 void UDSAnimInstance::AnimNotify_AttackHit()
@@ -327,9 +429,19 @@ void UDSAnimInstance::SetDeadAnim(bool bValue)
 	IsDead = bValue;
 }
 
+bool UDSAnimInstance::FunctionIsDead()
+{
+	return IsDead;
+}
+
 void UDSAnimInstance::SetRunInputCheck(bool bValue)
 {
 	bRunInputCheck = bValue;
+}
+
+bool UDSAnimInstance::GetRunInputCheck()
+{
+	return bRunInputCheck;
 }
 
 bool UDSAnimInstance::IsRolling()

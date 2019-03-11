@@ -23,7 +23,17 @@ public:
 	static const FName TargetKey;
 	static const FName RandomKey;
 	static const FName AroundPosKey;
-
+	static const FName RunTargetPosKey;
+	static const FName fDistanceToTargetKey;
+	static const FName PursueHomePosKey;
+	static const FName DistanceFromPursueHomePosToTargetKey;
+	static const FName IsPursueMaxRangeKey;
+	static const FName AICombatStateKey;
+	static const FName ObserveTimeKey;
+	static const FName AttackCountKey;
+	static const FName AIStateKey;
+	static const FName eAICombatStateKey;
+	static const FName fDeltaSecSumKey;
 
 private:
 	UPROPERTY()

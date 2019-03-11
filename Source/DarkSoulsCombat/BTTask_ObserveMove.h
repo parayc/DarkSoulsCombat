@@ -6,6 +6,14 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "BTTask_ObserveMove.generated.h"
 
+UENUM(BlueprintType)
+enum class EAICombatState : uint8
+{
+	ObservedMode UMETA(DisplayName = "ObservedMode"),
+	AttackMode UMETA(DisplayName = "AttackMode"),
+};
+
+
 /**
  * 
  */

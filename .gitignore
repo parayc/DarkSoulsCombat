@@ -81,4 +81,8 @@ Plugins/*/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 
+# 유료 리소스
+Content/Frank_RPG_Warrior/Animations/FBX/
+
+
 # End of https://www.gitignore.io/api/unrealengine

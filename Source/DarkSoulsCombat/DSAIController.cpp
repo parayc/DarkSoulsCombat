@@ -11,6 +11,22 @@ const FName ADSAIController::PatrolPosKey(TEXT("PatrolPos"));
 const FName ADSAIController::TargetKey(TEXT("Target"));
 const FName ADSAIController::RandomKey(TEXT("Random"));
 const FName ADSAIController::AroundPosKey(TEXT("AroundPos"));
+const FName ADSAIController::RunTargetPosKey(TEXT("RunTargetPos"));
+const FName ADSAIController::fDistanceToTargetKey(TEXT("fDistanceToTarget"));
+const FName ADSAIController::PursueHomePosKey(TEXT("PursueHomePos"));
+const FName ADSAIController::DistanceFromPursueHomePosToTargetKey(TEXT("DistanceFromPursueHomePosToTarget"));
+const FName ADSAIController::IsPursueMaxRangeKey(TEXT("IsPursueMaxRange"));
+const FName ADSAIController::AICombatStateKey(TEXT("AICombatState"));
+const FName ADSAIController::ObserveTimeKey(TEXT("ObserveTime"));
+const FName ADSAIController::AttackCountKey(TEXT("AttackCount"));
+const FName ADSAIController::AIStateKey(TEXT("AIState"));
+const FName ADSAIController::eAICombatStateKey(TEXT("eAICombatState"));
+const FName ADSAIController::fDeltaSecSumKey(TEXT("fDeltaSecSum"));
+
+//const FName ADSAIController::AICombatStateKey(TEXT("AICombatState"));
+
+
+
 
 ADSAIController::ADSAIController()
 {

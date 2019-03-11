@@ -1,0 +1,10 @@
+{
+	"BuildId": "4541578",
+	"Modules": 
+	{
+		"PythonAutomation": "UE4Editor-PythonAutomation.dll",
+		"PythonConsole": "UE4Editor-PythonConsole.dll",
+		"PythonEditor": "UE4Editor-PythonEditor.dll",
+		"UnrealEnginePython": "UE4Editor-UnrealEnginePython.dll"
+	}
+}
