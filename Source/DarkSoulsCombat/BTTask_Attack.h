@@ -25,6 +25,7 @@ protected:
 private:
 	int nAttackCnt;
 	
+
 	bool IsAttacking;
 	
 };

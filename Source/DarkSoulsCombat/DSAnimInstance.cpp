@@ -26,7 +26,7 @@ UDSAnimInstance::UDSAnimInstance()
 		AttackMontage_Combo01 = ATTACK_COMBO_01_MONTAGE.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_COMBO_02_MONTAGE(TEXT("/Game/AnimStarterPack/DSCharactor_AttackMontage.DSCharactor_AttackMontage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_COMBO_02_MONTAGE(TEXT("/Game/Frank_RPG_Warrior/Animations/DS_Mannequin_RM/DS_Frank_RPG_Warrior_Attack04_Montage.DS_Frank_RPG_Warrior_Attack04_Montage"));
 	if (ATTACK_COMBO_02_MONTAGE.Succeeded())
 	{
 		AttackMontage_Combo02 = ATTACK_COMBO_02_MONTAGE.Object;
@@ -105,6 +105,8 @@ UDSAnimInstance::UDSAnimInstance()
 		RollForwardLeft = ROLL_FORWADLEFT.Object;
 	}
 
+
+
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLL_FORWADRIGHT(TEXT("/Game/RollsAndDodges/Animations/RootMotion/DS_RollForwardRight_Root_Montage.DS_RollForwardRight_Root_Montage"));
 	if (ROLL_FORWADRIGHT.Succeeded())
 	{
@@ -122,7 +124,12 @@ UDSAnimInstance::UDSAnimInstance()
 	{
 		RollRight = ROLL_RIGHT.Object;
 	}
+
+
+
 }
+
+
 
 void UDSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
@@ -164,11 +171,11 @@ void UDSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
-void UDSAnimInstance::PlayAttackMontage(int nValue)
+void UDSAnimInstance::PlayAttackMontage()
 {
 	DSCHECK(!IsDead);
 
-	switch (nValue)
+	switch (m_nAttackComboType)
 	{
 	case 0:
 	{	
@@ -345,7 +352,7 @@ void UDSAnimInstance::PlayRollMontage()
 }
 
 
-void UDSAnimInstance::JumpToAttackMontageSection(int32 NewSection, int32 nAttackComboType)
+void UDSAnimInstance::JumpToAttackMontageSection(int32 NewSection)
 {
 	DSCHECK(!IsDead);
 	//DSCHECK(Montage_IsPlaying(AttackMontage))
@@ -353,7 +360,7 @@ void UDSAnimInstance::JumpToAttackMontageSection(int32 NewSection, int32 nAttack
 	// 다음 몽타주 섹션으로 넘어가기
 	// 매개변수 (넘어갈 섹션 문자열, 해당 몽타주)
 
-	switch (nAttackComboType)
+	switch (m_nAttackComboType)
 	{
 
 	case 0:
@@ -454,4 +461,25 @@ bool UDSAnimInstance::IsRolling()
 	}
 
 	return bResult;
+}
+
+bool UDSAnimInstance::AutoAttackCombo(int nAttackComboType)
+{
+	bool bResult = false;
+
+	/*PlayAttackMontage(nAttackComboType);*/
+
+	// 어택 카운트에따른 실행
+
+
+
+	return bResult;
+}
+
+void UDSAnimInstance::SetAttackComboType(int nAttackComboType)
+{
+	APawn* pPawn = TryGetPawnOwner();
+	ADSCharacter* pDSCharacter = Cast<ADSCharacter>(pPawn);
+
+	m_nAttackComboType = pDSCharacter->GetAttackComboType();
 }

@@ -25,7 +25,7 @@ public:
 	//Æ½¸¶´Ù È£ÃâµÊ 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	void PlayAttackMontage(int nValue);
+	void PlayAttackMontage();
 
 	void PlayHitReactionFront();
 	void PlayHitReactionBack();
@@ -33,13 +33,16 @@ public:
 	void PlayHitReactionRight();
 
 	// ÄÞº¸ °ø°Ý°ü·Ã ÇÔ¼ö
-	void JumpToAttackMontageSection(int32 NewSection, int32 nAttackComboType);
+	void JumpToAttackMontageSection(int32 NewSection);
 
 	FName GetAttackMontageSectionName(int32 Section);
 
 	FOnAttackHitCheckDelegate	OnAttackHit;
 	FOnNextAttackCheckDelegate OnNextAttackCheck;
 	FOnLastAttackDelegate		OnLastAttack;
+
+	int m_nAttackComboType;
+	void SetAttackComboType(int nAttackComboType);
 
 	void SetHitDirection(float fValue);
 	void SetDeadAnim(bool bValue);
@@ -50,6 +53,11 @@ public:
 
 	bool GetRunInputCheck();
 
+	bool AutoAttackCombo(int nAttackComboType);
+
+
+	/*void InitializeAnimation();
+*/
 private:
 
 	

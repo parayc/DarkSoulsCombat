@@ -112,7 +112,9 @@ ADSCharacter::ADSCharacter()
 	MaxCombo = 4; // 콤보공격 단계 최대치
 	AttackEndComboState(); // 공격이 끝나면 콤보공격 관련된 변수 초기화해주려고
 
-	nAttackComboType = 1;
+
+	// 어택 콤보 타입 설정 기본 1
+	
 
 
 	SetControlMode(eControlMode);
@@ -123,6 +125,8 @@ void ADSCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	DSAnim = Cast<UDSAnimInstance>(GetMesh()->GetAnimInstance());
+
+	SetAttackComboType(1);
 
 	DSAnim->OnAttackHit.AddUObject(this, &ADSCharacter::AttackCheck);
 
@@ -139,7 +143,7 @@ void ADSCharacter::PostInitializeComponents()
 			AttackStartComboState();
 			// 현재 섹션을 보내준다
 			// 말이 현재 섹션이지 AttackStartComboState 함수 거쳐서 오면 다음으로 넘어갈 섹션 넘버
-			DSAnim->JumpToAttackMontageSection(CurrentCombo, nAttackComboType);
+			DSAnim->JumpToAttackMontageSection(CurrentCombo);
 
 			if (AttackAudioComponent && AttackSoundCue)
 			{
@@ -607,8 +611,8 @@ void ADSCharacter::Attack()
 	{
 		DSCHECK(CurrentCombo == 0);
 		AttackStartComboState();
-		DSAnim->PlayAttackMontage(nAttackComboType);
-		DSAnim->JumpToAttackMontageSection(CurrentCombo, nAttackComboType);
+		DSAnim->PlayAttackMontage();
+		//DSAnim->JumpToAttackMontageSection(CurrentCombo);
 		IsAttacking = true;
 
 		if (AttackAudioComponent && AttackSoundCue)
@@ -800,5 +804,25 @@ bool ADSCharacter::IsCharacterAttacking()
 
 bool ADSCharacter::FunctionIsDead()
 {
+
+
 	return DSAnim->FunctionIsDead();
+}
+
+UDSAnimInstance* ADSCharacter::GetDSAnim()
+{
+	return DSAnim;
+}
+
+
+
+void ADSCharacter::SetAttackComboType(int nValue)
+{
+	nAttackComboType = nValue;
+	DSAnim->SetAttackComboType(nAttackComboType);
+}
+
+int32 ADSCharacter::GetAttackComboType()
+{
+	return nAttackComboType;
 }

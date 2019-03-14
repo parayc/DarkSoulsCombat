@@ -34,6 +34,8 @@ public:
 	static const FName AIStateKey;
 	static const FName eAICombatStateKey;
 	static const FName fDeltaSecSumKey;
+	static const FName IsDeadKey;
+
 
 private:
 	UPROPERTY()

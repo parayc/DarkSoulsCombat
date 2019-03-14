@@ -16,6 +16,7 @@ enum class EControlMode
 };
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnAttackComboTypeChange);
 
 UCLASS()
 class DARKSOULSCOMBAT_API ADSCharacter : public ACharacter
@@ -71,6 +72,8 @@ public:
 	void AttackEndComboState();
 
 	FOnAttackEndDelegate OnAttackEnd;
+	FOnAttackComboTypeChange OnAttackComboTypeChange;
+
 
 	UAudioComponent* FootStepAudioComponent;
 
@@ -98,7 +101,11 @@ public:
 	
 	bool FunctionIsDead();
 
+	class UDSAnimInstance* GetDSAnim();
 
+	int32 GetAttackComboType();
+
+	void SetAttackComboType(int nValue);
 
 private:
 	EControlMode eControlMode = EControlMode::eNomal;
@@ -108,6 +115,11 @@ private:
 	int32 nCurrentInputDir;
 	
 	int32 nAttackComboType;
+
+
+	UPROPERTY()
+		class UDSAnimInstance* DSAnim;
+	
 
 
 	// PlayerInput
@@ -125,9 +137,6 @@ private:
 	// 걷기 사운드 큐
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Sounds, Meta = (AllowPrivateAccess = true))
 	USoundCue* FootStepSoundCue;
-
-	UPROPERTY()
-	class UDSAnimInstance* DSAnim;
 
 
 	// 공격 관련

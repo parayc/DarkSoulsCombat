@@ -4,6 +4,7 @@
 #include "DSAIController.h"
 #include "DSCharacter.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "DSCharacterStatComponent.h"
 #include "DrawDebugHelpers.h"
 
 UBTService_Detect::UBTService_Detect()
@@ -22,10 +23,13 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 
 	ADSCharacter* Character = Cast<ADSCharacter>(ControllingPawn);
 
-	if (Character->FunctionIsDead())
-	{
-		return;
-	}
+	// 뭔가 이거 아닌것같지만 일단 이렇게... 동작은 되도록
+	// 델리게이트를 받아서 사망시 비헤이비트리 동작 못하도록 막음
+	pOwnerComp = &OwnerComp;
+
+	Character->CharacterStat->OnHPIsZero.AddLambda([this]() -> void {
+		pOwnerComp->GetBlackboardComponent()->SetValueAsBool(ADSAIController::IsDeadKey, true);
+	});
 
 	UWorld* World = ControllingPawn->GetWorld();
 	FVector Center = ControllingPawn->GetActorLocation();

@@ -22,6 +22,7 @@ const FName ADSAIController::AttackCountKey(TEXT("AttackCount"));
 const FName ADSAIController::AIStateKey(TEXT("AIState"));
 const FName ADSAIController::eAICombatStateKey(TEXT("eAICombatState"));
 const FName ADSAIController::fDeltaSecSumKey(TEXT("fDeltaSecSum"));
+const FName ADSAIController::IsDeadKey(TEXT("IsDead"));
 
 //const FName ADSAIController::AICombatStateKey(TEXT("AICombatState"));
 
