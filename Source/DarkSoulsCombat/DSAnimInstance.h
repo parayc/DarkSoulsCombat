@@ -26,6 +26,8 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	void PlayAttackMontage();
+	void PlayJumpAttackMontage();
+
 
 	void PlayHitReactionFront();
 	void PlayHitReactionBack();
@@ -55,6 +57,8 @@ public:
 
 	bool AutoAttackCombo(int nAttackComboType);
 
+
+	UAnimMontage* GetRollBackward();
 
 	/*void InitializeAnimation();
 */
@@ -111,6 +115,10 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* AttackMontage_Combo04;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* JumpAttackMontage_Combo01;
+
 
 
 

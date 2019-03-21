@@ -12,6 +12,7 @@ UBTService_Detect::UBTService_Detect()
 	NodeName = TEXT("Detect");
 	Interval = 0.3f;
 	vecPursueHomePosKey = FVector::ZeroVector;
+	m_bDetectEnable = true;
 }
 
 void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -72,6 +73,8 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 			if (DSCharacter && DSCharacter->GetController()->IsPlayerController())
 			{
 				OwnerComp.GetBlackboardComponent()->SetValueAsObject(ADSAIController::TargetKey, DSCharacter);
+				
+				m_bDetectEnable = false;
 
 				// 시점을 타겟에 고정하고 좌우 움직임
 			
@@ -106,7 +109,7 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 		Character->SetControlMode(EControlMode::eNomal);
 		vecPursueHomePosKey = FVector::ZeroVector;
 		// Patrol
-		OwnerComp.GetBlackboardComponent()->SetValueAsBool(ADSAIController::AIStateKey, false);
+		//OwnerComp.GetBlackboardComponent()->SetValueAsBool(ADSAIController::AIStateKey, false);
 		OwnerComp.GetBlackboardComponent()->SetValueAsVector(ADSAIController::PursueHomePosKey, vecPursueHomePosKey);
 	}
 

@@ -66,6 +66,7 @@ public:
 
 	// 공격 관련
 	void Attack();
+	void JumpAttack();
 	void AttackCheck();
 
 	void AttackStartComboState();
@@ -95,6 +96,7 @@ public:
 	void StartRun();
 	void StopRun();
 
+	void ForwardRoll();
 
 	bool GetRunInputCheck();
 	void SetControlMode(EControlMode eControlMode);
@@ -128,12 +130,13 @@ private:
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 	void ModeChange();
-	void ForwardRoll();
 
 
 	
 	void RadialDetection(float DeltaTime);
 	
+
+
 	// 걷기 사운드 큐
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Sounds, Meta = (AllowPrivateAccess = true))
 	USoundCue* FootStepSoundCue;
@@ -146,6 +149,7 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		bool IsAttacking;
 
+	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		bool CanNextCombo;
 

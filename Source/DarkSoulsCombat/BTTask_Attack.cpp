@@ -83,6 +83,19 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		EBTNodeResult::Failed;
 	}
 
+	auto Target = Cast<ADSCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(ADSAIController::TargetKey));
+	if (nullptr == Target)
+	{
+		EBTNodeResult::Failed;
+	}
+
+	if (DSCharacter->GetDistanceTo(Target) > 200)
+	{
+		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(ADSAIController::eAICombatStateKey, 0);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	}
+
+
 	// AI의 콤보공격을 위한 함수
 	FName CurrentSection = DSCharacter->GetDSAnim()->Montage_GetCurrentSection();
 
@@ -106,7 +119,7 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	// 어택 끝나면 테스트 종료 알려주는 함수 호출~
 	if (!IsAttacking)
 	{
-		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(ADSAIController::AICombatStateKey, 0);
+		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(ADSAIController::eAICombatStateKey, 0);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 }

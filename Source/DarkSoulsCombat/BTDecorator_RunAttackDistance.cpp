@@ -31,7 +31,7 @@ bool UBTDecorator_RunAttackDistance::CalculateRawConditionValue(UBehaviorTreeCom
 	{
 
 		bResult = false;
-		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(ADSAIController::eAICombatStateKey, 0);
+	//	OwnerComp.GetBlackboardComponent()->SetValueAsEnum(ADSAIController::eAICombatStateKey, 0);
 	}
 	
 

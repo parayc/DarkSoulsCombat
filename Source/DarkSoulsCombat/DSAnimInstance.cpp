@@ -46,6 +46,15 @@ UDSAnimInstance::UDSAnimInstance()
 
 
 
+	// JumpAttack
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> JUMP_ATTACK_COMBO_01_MONTAGE(TEXT("/Game/Frank_RPG_Warrior/Animations/DS_Mannequin_RM/DS_Frank_RPG_Warrior_Attack04_Montage.DS_Frank_RPG_Warrior_Attack04_Montage"));
+	if (JUMP_ATTACK_COMBO_01_MONTAGE.Succeeded())
+	{
+		JumpAttackMontage_Combo01 = JUMP_ATTACK_COMBO_01_MONTAGE.Object;
+	}
+
+
+
 
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> HIT_REACTION_FRONT(TEXT("/Game/JogMoveAnim/DS_HitReaction_Front.DS_HitReaction_Front"));
@@ -171,6 +180,7 @@ void UDSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
+
 void UDSAnimInstance::PlayAttackMontage()
 {
 	DSCHECK(!IsDead);
@@ -223,10 +233,22 @@ void UDSAnimInstance::PlayAttackMontage()
 	}
 
 	}
-	
+}
 
+void UDSAnimInstance::PlayJumpAttackMontage()
+{
+	DSCHECK(!IsDead);
+
+	if (!Montage_IsPlaying(JumpAttackMontage_Combo01))
+	{
+		Montage_Play(JumpAttackMontage_Combo01, 1.0f);
+		
+	}
 
 }
+
+
+
 
 void UDSAnimInstance::PlayHitReactionFront()
 {
@@ -272,8 +294,9 @@ void UDSAnimInstance::PlayRollMontage()
 
 	ADSCharacter* pCharacter = Cast<ADSCharacter>(pPawn);
 
+
 	int nMoveForward = pCharacter->InputComponent->GetAxisValue(TEXT("MoveForward"));
-	int nMoveRight   = pCharacter->InputComponent->GetAxisValue(TEXT("MoveRight"));
+	int nMoveRight = pCharacter->InputComponent->GetAxisValue(TEXT("MoveRight"));
 
 	// 노말 모드일때 구르기 방향을 설정하기 위해서
 	//FVector vecCurrentDir;
@@ -482,4 +505,9 @@ void UDSAnimInstance::SetAttackComboType(int nAttackComboType)
 	ADSCharacter* pDSCharacter = Cast<ADSCharacter>(pPawn);
 
 	m_nAttackComboType = pDSCharacter->GetAttackComboType();
+}
+
+UAnimMontage* UDSAnimInstance::GetRollBackward()
+{
+	return RollBackward;
 }

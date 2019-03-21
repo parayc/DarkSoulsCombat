@@ -24,4 +24,6 @@ protected:
 	UBehaviorTreeComponent* pOwnerComp;
 
 	FVector vecPursueHomePosKey;
+
+	bool m_bDetectEnable;
 };

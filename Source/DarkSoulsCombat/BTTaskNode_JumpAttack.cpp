@@ -23,12 +23,15 @@ EBTNodeResult::Type UBTTaskNode_JumpAttack::ExecuteTask(UBehaviorTreeComponent& 
 		return EBTNodeResult::Failed;
 	}
 
-	DSCharacter->SetAttackComboType(2);
+	//DSCharacter->SetAttackComboType(2);
 
-	DSCharacter->Attack();
+	DSCharacter->bPressedJump = true;
+	// 그냥 Attack으로 하면 공중에 뜨기도 전에 ATTACK함 스레딩되있나봄
+	DSCharacter->JumpAttack();
+	DSCharacter->GetCharacterMovement()->JumpZVelocity = 400.0f;
 	IsAttacking = true;
 
-	DSCharacter->OnAttackEnd.AddLambda([this]() -> void {
+	DSCharacter->OnAttackEnd.AddLambda([=]() -> void {
 		IsAttacking = false;
 	});
 
@@ -48,7 +51,7 @@ void UBTTaskNode_JumpAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 	// 어택 끝나면 테스트 종료 알려주는 함수 호출~
 	if (!IsAttacking)
 	{
-		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(ADSAIController::AICombatStateKey, 0);
+		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(ADSAIController::eAICombatStateKey, 0);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 }

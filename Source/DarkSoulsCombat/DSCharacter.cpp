@@ -591,37 +591,70 @@ NextAttackCheck 노티파이 발생전에
 // 일반공격 함수
 void ADSCharacter::Attack()
 {
-	if (DSAnim->IsRolling() == true)
+	// 공중공격
+	if (GetMovementComponent()->IsFalling())
 	{
-		return;
-	}
-
-	// 공격중이라면 첫회 공격차에서는 여기 안탐 2번째 콤보부터 탐
-	if (IsAttacking)
-	{
-		DSCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo))
-
-		if (CanNextCombo)
+		if (DSAnim->IsRolling() == true)
 		{
-			IsComboInputOn = true;
-
+			return;
 		}
-	}
-	else
-	{
-		DSCHECK(CurrentCombo == 0);
-		AttackStartComboState();
-		DSAnim->PlayAttackMontage();
-		//DSAnim->JumpToAttackMontageSection(CurrentCombo);
-		IsAttacking = true;
+
+		DSAnim->PlayJumpAttackMontage();
 
 		if (AttackAudioComponent && AttackSoundCue)
 		{
 			AttackAudioComponent->Play(0.f);
 		}
 	}
+	else
+	{
+		if (DSAnim->IsRolling() == true)
+		{
+			return;
+		}
 
+		// 공격중이라면 첫회 공격차에서는 여기 안탐 2번째 콤보부터 탐
+		if (IsAttacking)
+		{
+			DSCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo))
 
+				if (CanNextCombo)
+				{
+					IsComboInputOn = true;
+
+				}
+		}
+		else
+		{
+			DSCHECK(CurrentCombo == 0);
+			AttackStartComboState();
+			DSAnim->PlayAttackMontage();
+			//DSAnim->JumpToAttackMontageSection(CurrentCombo);
+			IsAttacking = true;
+
+			if (AttackAudioComponent && AttackSoundCue)
+			{
+				AttackAudioComponent->Play(0.f);
+			}
+		}
+	}
+}
+
+void ADSCharacter::JumpAttack()
+{
+	if (DSAnim->IsRolling() == true)
+	{
+		return;
+	}
+
+	DSAnim->PlayJumpAttackMontage();
+	AttackStartComboState();
+	IsAttacking = true;
+
+	if (AttackAudioComponent && AttackSoundCue)
+	{
+		AttackAudioComponent->Play(0.f);
+	}
 }
 
 void ADSCharacter::AttackCheck()
