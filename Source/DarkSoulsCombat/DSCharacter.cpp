@@ -184,6 +184,19 @@ void ADSCharacter::BeginPlay()
 		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket_RightHand_Weapon);
 	}
 
+	
+
+
+	FName Socket_LeftHand_Shield(TEXT("Socket_LeftHand_Shield"));
+	CurShield = GetWorld()->SpawnActor<ADSShield>(FVector::ZeroVector, FRotator::ZeroRotator);
+	if (nullptr != CurWeapon)
+	{
+		CurShield->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket_LeftHand_Shield);
+	}
+
+
+
+
 	if (AttackAudioComponent && AttackSoundCue)
 	{
 		AttackAudioComponent->SetSound(Cast<USoundBase>(AttackSoundCue));
@@ -246,6 +259,8 @@ void ADSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ADSCharacter::Attack);
 	PlayerInputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Pressed, this, &ADSCharacter::StartRun);
 	PlayerInputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Released, this, &ADSCharacter::StopRun);
+	PlayerInputComponent->BindAction(TEXT("Guard"), EInputEvent::IE_Pressed, this, &ADSCharacter::StartGuard);
+	PlayerInputComponent->BindAction(TEXT("Guard"), EInputEvent::IE_Released, this, &ADSCharacter::StopGuard);
 	PlayerInputComponent->BindAction(TEXT("ForwardRoll"), EInputEvent::IE_Pressed, this, &ADSCharacter::ForwardRoll);
 	
 }
@@ -805,6 +820,40 @@ void ADSCharacter::StopRun()
 		GetCharacterMovement()->MaxWalkSpeed = 360.0f;
 	}
 }
+
+
+void ADSCharacter::StartGuard()
+{
+	DSLOG(Warning, TEXT("StartGuard"));
+
+	DSAnim->SetGuardInputCheck(true);
+
+	if (IsPlayerControlled())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 180.0f;
+	}
+}
+
+void ADSCharacter::StopGuard()
+{
+	DSLOG(Warning, TEXT("StopGuard"));
+
+	DSAnim->SetGuardInputCheck(false);
+
+	if (IsPlayerControlled())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 360.0f;
+	}
+}
+
 
 bool ADSCharacter::GetRunInputCheck()
 {

@@ -153,7 +153,9 @@ void UDSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (!IsDead)
 	{
 		fCurrentPawnSpeed = pPawn->GetVelocity().Size();
-		
+
+		if (pPawn->IsPlayerControlled()) DSLOG(Warning, TEXT("fCurrentPawnSpeed : %f"), fCurrentPawnSpeed);
+
 		ACharacter* pCharacter = Cast<ACharacter>(pPawn);
 
 		// 바라보는 방향과 움직이는 방향의 사이 각도를 반환해줌
@@ -163,7 +165,7 @@ void UDSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		
 		if (pCharacter->IsPlayerControlled())
 		{
-			DSLOG(Warning, TEXT("%f, %f, %f"), pCharacter->GetActorLocation().X, pCharacter->GetActorLocation().Y, pCharacter->GetActorLocation().Z);
+			//DSLOG(Warning, TEXT("%f, %f, %f"), pCharacter->GetActorLocation().X, pCharacter->GetActorLocation().Y, pCharacter->GetActorLocation().Z);
 		}
 
 		if (pCharacter->IsPlayerControlled())
@@ -411,21 +413,21 @@ void UDSAnimInstance::JumpToAttackMontageSection(int32 NewSection)
 
 void UDSAnimInstance::AnimNotify_AttackHit()
 {
-	DSLOG_S(Warning);
+	//DSLOG_S(Warning);
 
 	OnAttackHit.Broadcast();
 }
 
 void UDSAnimInstance::AnimNotify_NextAttackCheck()
 {
-	DSLOG_S(Warning);
+	//DSLOG_S(Warning);
 
 	OnNextAttackCheck.Broadcast();
 }
 
 void UDSAnimInstance::AnimNotify_LastAttack()
 {
-	DSLOG_S(Warning);
+	//DSLOG_S(Warning);
 
 	OnLastAttack.Broadcast();
 }
@@ -441,12 +443,12 @@ FName UDSAnimInstance::GetAttackMontageSectionName(int32 Section)
 
 void UDSAnimInstance::AnimNotify_RightPlant()
 {
-	DSLOG_S(Warning);
+	//DSLOG_S(Warning);
 }
 
 void UDSAnimInstance::AnimNotify_LeftPlant()
 {
-	DSLOG_S(Warning);
+	//DSLOG_S(Warning);
 }
 
 void UDSAnimInstance::SetHitDirection(float fValue)
@@ -473,6 +475,19 @@ bool UDSAnimInstance::GetRunInputCheck()
 {
 	return bRunInputCheck;
 }
+
+
+void UDSAnimInstance::SetGuardInputCheck(bool bValue)
+{
+	bGuardInputCheck = bValue;
+}
+
+bool UDSAnimInstance::GetGuardInputCheck()
+{
+	return bGuardInputCheck;
+}
+
+
 
 bool UDSAnimInstance::IsRolling()
 {

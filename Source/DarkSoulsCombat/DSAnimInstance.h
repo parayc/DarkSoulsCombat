@@ -49,11 +49,14 @@ public:
 	void SetHitDirection(float fValue);
 	void SetDeadAnim(bool bValue);
 	void SetRunInputCheck(bool bValue);
+	void SetGuardInputCheck(bool bValue);
+
 	void PlayRollMontage();
 	bool IsRolling();
 	bool FunctionIsDead();
 
 	bool GetRunInputCheck();
+	bool GetGuardInputCheck();
 
 	bool AutoAttackCombo(int nAttackComboType);
 
@@ -83,6 +86,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	bool bRunInputCheck;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	bool bGuardInputCheck;
+
+
+
 
 	// 다음 콤보로 이어질 수 있는 구간인 NextAttackCheck 노티파이 발생시 호출 함수
 	UFUNCTION()

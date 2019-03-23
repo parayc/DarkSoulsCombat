@@ -4,6 +4,7 @@
 
 #include "DarkSoulsCombat.h"
 #include "DSWeapon.h"
+#include "DSShield.h"
 #include "Sound/SoundCue.h"
 #include "GameFramework/Character.h"
 #include "DSCharacter.generated.h"
@@ -42,6 +43,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	ADSWeapon* CurWeapon;
+	
+	UPROPERTY(VisibleAnywhere, Category = Shield)
+	ADSShield* CurShield;
 	
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	USpringArmComponent* SpringArm;
@@ -95,6 +99,9 @@ public:
 
 	void StartRun();
 	void StopRun();
+
+	void StartGuard();
+	void StopGuard();
 
 	void ForwardRoll();
 
