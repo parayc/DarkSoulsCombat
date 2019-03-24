@@ -113,9 +113,11 @@ ADSCharacter::ADSCharacter()
 	AttackEndComboState(); // 공격이 끝나면 콤보공격 관련된 변수 초기화해주려고
 
 
-	// 어택 콤보 타입 설정 기본 1
-	
-
+	// 어택 콤보 타입 설정 기본 1	
+	m_bGuard = false;
+	m_bPressedGuard = false;
+	m_bPressedRun = false;
+	m_bRolling = false;
 
 	SetControlMode(eControlMode);
 }
@@ -131,6 +133,10 @@ void ADSCharacter::PostInitializeComponents()
 	DSAnim->OnAttackHit.AddUObject(this, &ADSCharacter::AttackCheck);
 
 	DSAnim->OnMontageEnded.AddDynamic(this, &ADSCharacter::OnAttackMontageEnded);
+
+	DSAnim->OnMontageEnded.AddDynamic(this, &ADSCharacter::OnRollingMontageEnded);
+
+
 
 	// 콤보공격 관련 기능
 	DSAnim->OnNextAttackCheck.AddLambda([this]() -> void {
@@ -167,8 +173,7 @@ void ADSCharacter::PostInitializeComponents()
 		LastAttacker->Target();
 	});
 
-
-
+	
 }
 
 // Called when the game starts or when spawned
@@ -326,6 +331,20 @@ void ADSCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted
 
 	OnAttackEnd.Broadcast();
 }
+
+void ADSCharacter::OnRollingMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	DSCHECK(m_bRolling);
+	
+	m_bRolling = false;
+
+	if (m_bPressedGuard)
+	{
+		StartGuard();
+	}
+}
+
+
 
 
 void ADSCharacter::ModeChange()
@@ -797,6 +816,14 @@ void ADSCharacter::StartRun()
 {
 	DSAnim->SetRunInputCheck(true);
 	
+	m_bPressedRun = true;
+
+	if (IsGuard())
+	{
+		m_bGuard = false;
+		DSLOG(Warning, TEXT("m_bGuard = false"));
+	}
+
 	if (IsPlayerControlled())
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 900.0f;
@@ -811,6 +838,13 @@ void ADSCharacter::StopRun()
 {
 	DSAnim->SetRunInputCheck(false);
 
+	m_bPressedRun = false;
+
+	if (m_bPressedGuard)
+	{
+		StartGuard();
+	}
+
 	if (IsPlayerControlled())
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 600.0f;
@@ -824,9 +858,14 @@ void ADSCharacter::StopRun()
 
 void ADSCharacter::StartGuard()
 {
-	DSLOG(Warning, TEXT("StartGuard"));
+	//DSLOG(Warning, TEXT("StartGuard"));
 
 	DSAnim->SetGuardInputCheck(true);
+
+	m_bPressedGuard = true;
+
+	m_bGuard = true;
+	DSLOG(Warning, TEXT("m_bGuard = true"));
 
 	if (IsPlayerControlled())
 	{
@@ -840,9 +879,17 @@ void ADSCharacter::StartGuard()
 
 void ADSCharacter::StopGuard()
 {
-	DSLOG(Warning, TEXT("StopGuard"));
+	//DSLOG(Warning, TEXT("StopGuard"));
+
+	m_bPressedGuard = false;
+
+	m_bGuard = false;
+	DSLOG(Warning, TEXT("m_bGuard = false"));
 
 	DSAnim->SetGuardInputCheck(false);
+
+
+	if (m_bPressedRun) return;
 
 	if (IsPlayerControlled())
 	{
@@ -863,7 +910,19 @@ bool ADSCharacter::GetRunInputCheck()
 
 void ADSCharacter::ForwardRoll()
 {
+	if (IsGuard())
+	{
+		m_bGuard = false;
+		DSLOG(Warning, TEXT("m_bGuard = false"));
+	}
+
+	m_bRolling = true;
+
+	//StopGuard();
+
 	DSAnim->PlayRollMontage();
+
+
 }
 
 EControlMode ADSCharacter::GetCurrentControlMode()
@@ -907,4 +966,9 @@ void ADSCharacter::SetAttackComboType(int nValue)
 int32 ADSCharacter::GetAttackComboType()
 {
 	return nAttackComboType;
+}
+
+bool ADSCharacter::IsGuard()
+{
+	return m_bGuard;
 }

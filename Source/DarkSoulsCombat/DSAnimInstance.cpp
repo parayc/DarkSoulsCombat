@@ -154,7 +154,7 @@ void UDSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		fCurrentPawnSpeed = pPawn->GetVelocity().Size();
 
-		if (pPawn->IsPlayerControlled()) DSLOG(Warning, TEXT("fCurrentPawnSpeed : %f"), fCurrentPawnSpeed);
+		/*if (pPawn->IsPlayerControlled()) DSLOG(Warning, TEXT("fCurrentPawnSpeed : %f"), fCurrentPawnSpeed);*/
 
 		ACharacter* pCharacter = Cast<ACharacter>(pPawn);
 

@@ -17,6 +17,7 @@ enum class EControlMode
 };
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnRollingEndDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnAttackComboTypeChange);
 
 UCLASS()
@@ -40,6 +41,9 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+
+	bool IsGuard();
 
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	ADSWeapon* CurWeapon;
@@ -77,6 +81,7 @@ public:
 	void AttackEndComboState();
 
 	FOnAttackEndDelegate OnAttackEnd;
+	FOnRollingEndDelegate OnRollingEnd;
 	FOnAttackComboTypeChange OnAttackComboTypeChange;
 
 
@@ -125,6 +130,12 @@ private:
 	
 	int32 nAttackComboType;
 
+	bool m_bPressedRun;
+	bool m_bPressedGuard;
+
+	bool m_bGuard;
+
+	bool m_bRolling;
 
 	UPROPERTY()
 		class UDSAnimInstance* DSAnim;
@@ -152,6 +163,11 @@ private:
 	// 공격 관련
 	UFUNCTION()
 		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	
+	UFUNCTION()
+		void OnRollingMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		bool IsAttacking;
