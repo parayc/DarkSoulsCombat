@@ -45,6 +45,9 @@ public:
 
 	bool IsGuard();
 
+	void SetGuard(bool bValue);
+	bool GetGuard();
+
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	ADSWeapon* CurWeapon;
 	
@@ -155,6 +158,12 @@ private:
 	
 
 
+	// Hit Grunt 사운드 큐
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Sounds, Meta = (AllowPrivateAccess = true))
+	USoundCue* HitGruntSoundCue;
+
+
+
 	// 걷기 사운드 큐
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Sounds, Meta = (AllowPrivateAccess = true))
 	USoundCue* FootStepSoundCue;
@@ -189,6 +198,8 @@ private:
 		USoundCue* AttackSoundCue;
 
 	UAudioComponent* AttackAudioComponent;
+	UAudioComponent* HitGruntAudioComponent;
+
 
 	
 };

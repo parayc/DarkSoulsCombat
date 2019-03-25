@@ -3,6 +3,7 @@
 #pragma once
 
 #include "DarkSoulsCombat.h"
+#include "Sound/SoundCue.h"
 #include "GameFramework/Actor.h"
 #include "DSShield.generated.h"
 
@@ -23,11 +24,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void PlayHitSound();
 
 private:
 
 	UPROPERTY(VisibleAnywhere, Category = Shield)
 	USkeletalMeshComponent* Shield;
 
+	// 걷기 사운드 큐
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Sounds, Meta = (AllowPrivateAccess = true))
+	USoundCue* HitSoundCue;
+
+	UAudioComponent* HitSoundAudioComponent;
 
 };

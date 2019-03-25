@@ -94,6 +94,16 @@ ADSCharacter::ADSCharacter()
 		AttackAudioComponent->SetupAttachment(RootComponent);
 	}
 
+
+	// Hit Grunt(앓는) 소리
+	static ConstructorHelpers::FObjectFinder<USoundCue> SC_HitGruntSoundCue(TEXT("/Game/SoundSoruce/ManGrunt/SC_ManGrunt.SC_ManGrunt"));
+	if (SC_HitGruntSoundCue.Succeeded())
+	{
+		HitGruntSoundCue = SC_HitGruntSoundCue.Object;
+		HitGruntAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("HitGruntAudioComponent"));
+		HitGruntAudioComponent->SetupAttachment(RootComponent);
+	}
+
 	// 걷기 소리
 	static ConstructorHelpers::FObjectFinder<USoundCue> SC_FootStepSoundCue(TEXT("/Game/AnimStarterPack/Sound/A_Character_Step_Cue.A_Character_Step_Cue"));
 	if (SC_FootStepSoundCue.Succeeded())
@@ -115,6 +125,7 @@ ADSCharacter::ADSCharacter()
 
 	// 어택 콤보 타입 설정 기본 1	
 	m_bGuard = false;
+	
 	m_bPressedGuard = false;
 	m_bPressedRun = false;
 	m_bRolling = false;
@@ -192,12 +203,16 @@ void ADSCharacter::BeginPlay()
 	
 
 
+
 	FName Socket_LeftHand_Shield(TEXT("Socket_LeftHand_Shield"));
 	CurShield = GetWorld()->SpawnActor<ADSShield>(FVector::ZeroVector, FRotator::ZeroRotator);
-	if (nullptr != CurWeapon)
+	if (nullptr != CurShield)
 	{
 		CurShield->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket_LeftHand_Shield);
+		CurShield->SetActorEnableCollision(false);
 	}
+
+
 
 
 
@@ -210,6 +225,11 @@ void ADSCharacter::BeginPlay()
 	if (FootStepAudioComponent && FootStepSoundCue)
 	{
 		FootStepAudioComponent->SetSound(Cast<USoundBase>(FootStepSoundCue));
+	}
+
+	if (HitGruntSoundCue && HitGruntAudioComponent)
+	{
+		HitGruntAudioComponent->SetSound(Cast<USoundBase>(HitGruntSoundCue));
 	}
 
 	// 이거 왜 BeginPlay()에서 해야하지??
@@ -709,6 +729,23 @@ void ADSCharacter::AttackCheck()
 	{
 		if (HitResult.Actor.IsValid())
 		{
+			ADSShield* DSShield = Cast<ADSShield>(HitResult.GetActor());
+
+			if (DSShield)
+			{
+				// 방패가 감지됬다는거면 방패의 콜리젼이 켜있다는거이며 결국 그것은 방패를 들고있는 캐릭터가 방패 방어를 실중이라는 소리
+				// 그렇다면 여기서 공격이 실패했을때의 작업을 진행하면 됨
+				// 공격이 방패에 가로막혔을때 해야하는 작업
+				// 방패에 막히는 사운드 큐 실행
+				// 사운드 큐 객체를 하나 가지고 있을까?
+				// 방페가 소리를 내야할까?
+				// 
+
+				DSLOG(Warning, TEXT("Shield Hit!!!"));
+				DSShield->PlayHitSound();
+			}
+
+
 			DSLOG(Warning, TEXT("Hit Actor Name : %s"), *HitResult.Actor->GetName());
 			
 			FDamageEvent DamageEvent;
@@ -726,6 +763,8 @@ float ADSCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& Da
 {
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	CharacterStat->SetDamage(FinalDamage);
+
+	HitGruntAudioComponent->Play(0.f);
 
 	// 마지막으로 공격한 사람이 누군지 확인하기 위해서
 	LastAttacker = Cast<ADSCharacter>(DamageCauser);
@@ -820,8 +859,8 @@ void ADSCharacter::StartRun()
 
 	if (IsGuard())
 	{
-		m_bGuard = false;
-		DSLOG(Warning, TEXT("m_bGuard = false"));
+		//m_bGuard = false;
+		SetGuard(false);
 	}
 
 	if (IsPlayerControlled())
@@ -864,8 +903,8 @@ void ADSCharacter::StartGuard()
 
 	m_bPressedGuard = true;
 
-	m_bGuard = true;
-	DSLOG(Warning, TEXT("m_bGuard = true"));
+	SetGuard(true);
+
 
 	if (IsPlayerControlled())
 	{
@@ -883,8 +922,8 @@ void ADSCharacter::StopGuard()
 
 	m_bPressedGuard = false;
 
-	m_bGuard = false;
-	DSLOG(Warning, TEXT("m_bGuard = false"));
+	SetGuard(false);
+
 
 	DSAnim->SetGuardInputCheck(false);
 
@@ -912,8 +951,7 @@ void ADSCharacter::ForwardRoll()
 {
 	if (IsGuard())
 	{
-		m_bGuard = false;
-		DSLOG(Warning, TEXT("m_bGuard = false"));
+		SetGuard(false);
 	}
 
 	m_bRolling = true;
@@ -969,6 +1007,29 @@ int32 ADSCharacter::GetAttackComboType()
 }
 
 bool ADSCharacter::IsGuard()
+{
+	return m_bGuard;
+}
+
+void ADSCharacter::SetGuard(bool bValue)
+{
+	m_bGuard = bValue;
+	
+	if (bValue)
+	{
+		// 트루면 콜리젼 키고
+		CurShield->SetActorEnableCollision(true);
+		DSLOG(Warning, TEXT("Shield Collision = true!!"));
+	}
+	else
+	{
+		// 풜스면 콜리젼 끄고
+		CurShield->SetActorEnableCollision(false);
+		DSLOG(Warning, TEXT("Shield Collision = false!!"));
+	}
+}
+
+bool ADSCharacter::GetGuard()
 {
 	return m_bGuard;
 }

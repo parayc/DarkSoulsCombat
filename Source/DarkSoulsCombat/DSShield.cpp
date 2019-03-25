@@ -11,6 +11,8 @@ ADSShield::ADSShield()
 
 	Shield = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SHIELD"));
 
+	Shield->SetCollisionProfileName(TEXT("DSShield"));
+
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_SHIELD(TEXT("/Game/Weapon_Pack/Skeletal_Mesh/SK_Shield.SK_Shield"));
 	if (SK_SHIELD.Succeeded())
 	{
@@ -19,14 +21,27 @@ ADSShield::ADSShield()
 
 	RootComponent = Shield;
 
-	
+	// °È±â ¼Ò¸®
+	static ConstructorHelpers::FObjectFinder<USoundCue> SC_HitSoundCue(TEXT("/Game/SoundSoruce/SwordHit/SC_SwordMetalHit.SC_SwordMetalHit"));
+	if (SC_HitSoundCue.Succeeded())
+	{
+		HitSoundCue = SC_HitSoundCue.Object;
+		HitSoundAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("HitSoundAudioComponent"));
+		HitSoundAudioComponent->SetupAttachment(RootComponent);
+	}
+
+
 }
 
 // Called when the game starts or when spawned
 void ADSShield::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (HitSoundAudioComponent && HitSoundCue)
+	{
+		HitSoundAudioComponent->SetSound(Cast<USoundBase>(HitSoundCue));
+	}
 }
 
 // Called every frame
@@ -36,3 +51,7 @@ void ADSShield::Tick(float DeltaTime)
 
 }
 
+void ADSShield::PlayHitSound()
+{
+	HitSoundAudioComponent->Play(0.f);
+}
