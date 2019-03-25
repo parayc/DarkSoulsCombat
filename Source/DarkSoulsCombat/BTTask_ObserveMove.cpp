@@ -13,6 +13,7 @@ UBTTask_ObserveMove::UBTTask_ObserveMove()
 	nPlayTimeCnt = 0;
 	nAxisValue = 0;
 	DeltaSecSum = 0;
+	m_nGuard = 0;
 	eMoveDir = MOVE_DIR::eDir_FB;
 }
 
@@ -28,6 +29,12 @@ EBTNodeResult::Type UBTTask_ObserveMove::ExecuteTask(UBehaviorTreeComponent& Own
 
 	nPlayTimeCnt = rand() % 5;
 	int nDir = rand() % 2;
+	m_nGuard = rand() % 4;
+
+	if (m_nGuard != 0)
+	{
+		Character->StartGuard();
+	}
 
 	switch (nDir)
 	{
@@ -73,6 +80,7 @@ void UBTTask_ObserveMove::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 			Character->GetDSAnim()->Montage_Play(Character->GetDSAnim()->GetRollBackward(), 1.0f);
 		}
 		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(ADSAIController::eAICombatStateKey, 1);
+		Character->StopGuard();
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 
@@ -82,6 +90,7 @@ void UBTTask_ObserveMove::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 		//nPlayTimeCnt = 5;
 
 		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(ADSAIController::eAICombatStateKey, 1);
+		Character->StopGuard();
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 	else

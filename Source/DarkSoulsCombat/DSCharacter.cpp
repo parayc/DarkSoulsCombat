@@ -161,11 +161,11 @@ void ADSCharacter::PostInitializeComponents()
 			// 현재 섹션을 보내준다
 			// 말이 현재 섹션이지 AttackStartComboState 함수 거쳐서 오면 다음으로 넘어갈 섹션 넘버
 			DSAnim->JumpToAttackMontageSection(CurrentCombo);
-
+/*
 			if (AttackAudioComponent && AttackSoundCue)
 			{
 				AttackAudioComponent->Play(0.f);
-			}
+			}*/
 
 		}
 
@@ -655,10 +655,10 @@ void ADSCharacter::Attack()
 
 		DSAnim->PlayJumpAttackMontage();
 
-		if (AttackAudioComponent && AttackSoundCue)
-		{
-			AttackAudioComponent->Play(0.f);
-		}
+		//if (AttackAudioComponent && AttackSoundCue)
+		//{
+		//	AttackAudioComponent->Play(0.f);
+		//}
 	}
 	else
 	{
@@ -686,10 +686,10 @@ void ADSCharacter::Attack()
 			//DSAnim->JumpToAttackMontageSection(CurrentCombo);
 			IsAttacking = true;
 
-			if (AttackAudioComponent && AttackSoundCue)
+	/*		if (AttackAudioComponent && AttackSoundCue)
 			{
 				AttackAudioComponent->Play(0.f);
-			}
+			}*/
 		}
 	}
 }
@@ -704,11 +704,11 @@ void ADSCharacter::JumpAttack()
 	DSAnim->PlayJumpAttackMontage();
 	AttackStartComboState();
 	IsAttacking = true;
-
+/*
 	if (AttackAudioComponent && AttackSoundCue)
 	{
 		AttackAudioComponent->Play(0.f);
-	}
+	}*/
 }
 
 void ADSCharacter::AttackCheck()
@@ -745,6 +745,9 @@ void ADSCharacter::AttackCheck()
 				{
 					DSLOG(Warning, TEXT("Shield Hit!!!"));
 					DSShield->PlayHitSound();
+					
+					ADSCharacter* TempCharacter = Cast<ADSCharacter>(DSShield->GetAttachParentActor());
+					TempCharacter->PlayKnockBack(20.f);
 				}
 
 			}
@@ -1036,4 +1039,12 @@ void ADSCharacter::SetGuard(bool bValue)
 bool ADSCharacter::GetGuard()
 {
 	return m_bGuard;
+}
+
+void ADSCharacter::PlayKnockBack(float fDistance)
+{
+	FVector BackVector = GetActorForwardVector() * -1.f;
+	FVector KnockBackLocation = GetActorLocation() + (BackVector * fDistance);
+
+	SetActorLocation(KnockBackLocation);
 }

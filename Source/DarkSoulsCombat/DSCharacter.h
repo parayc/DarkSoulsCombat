@@ -89,6 +89,9 @@ public:
 
 
 	UAudioComponent* FootStepAudioComponent;
+	UAudioComponent* AttackAudioComponent;
+	UAudioComponent* HitGruntAudioComponent;
+
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void PossessedBy(AController* NewController) override;
@@ -123,6 +126,8 @@ public:
 	int32 GetAttackComboType();
 
 	void SetAttackComboType(int nValue);
+
+	void PlayKnockBack(float fDistance);
 
 private:
 	EControlMode eControlMode = EControlMode::eNomal;
@@ -197,8 +202,7 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		USoundCue* AttackSoundCue;
 
-	UAudioComponent* AttackAudioComponent;
-	UAudioComponent* HitGruntAudioComponent;
+
 
 
 	

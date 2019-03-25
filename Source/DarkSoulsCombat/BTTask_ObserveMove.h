@@ -46,6 +46,8 @@ private:
 	// 플레이 시간
 	int nPlayTimeCnt;
 
+	int m_nGuard;
+
 	float DeltaSecSum;
 
 	int nAxisValue;
