@@ -733,6 +733,7 @@ void ADSCharacter::AttackCheck()
 
 			if (DSShield)
 			{
+
 				// 방패가 감지됬다는거면 방패의 콜리젼이 켜있다는거이며 결국 그것은 방패를 들고있는 캐릭터가 방패 방어를 실중이라는 소리
 				// 그렇다면 여기서 공격이 실패했을때의 작업을 진행하면 됨
 				// 공격이 방패에 가로막혔을때 해야하는 작업
@@ -740,9 +741,12 @@ void ADSCharacter::AttackCheck()
 				// 사운드 큐 객체를 하나 가지고 있을까?
 				// 방페가 소리를 내야할까?
 				// 
+				if (DSShield != CurShield)
+				{
+					DSLOG(Warning, TEXT("Shield Hit!!!"));
+					DSShield->PlayHitSound();
+				}
 
-				DSLOG(Warning, TEXT("Shield Hit!!!"));
-				DSShield->PlayHitSound();
 			}
 
 

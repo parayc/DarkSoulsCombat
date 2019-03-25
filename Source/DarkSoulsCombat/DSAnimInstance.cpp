@@ -26,23 +26,23 @@ UDSAnimInstance::UDSAnimInstance()
 		AttackMontage_Combo01 = ATTACK_COMBO_01_MONTAGE.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_COMBO_02_MONTAGE(TEXT("/Game/Frank_RPG_Warrior/Animations/DS_Mannequin_RM/DS_Frank_RPG_Warrior_Attack04_Montage.DS_Frank_RPG_Warrior_Attack04_Montage"));
-	if (ATTACK_COMBO_02_MONTAGE.Succeeded())
-	{
-		AttackMontage_Combo02 = ATTACK_COMBO_02_MONTAGE.Object;
-	}
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_COMBO_02_MONTAGE(TEXT("/Game/Frank_RPG_Warrior/Animations/DS_Mannequin_RM/DS_Frank_RPG_Warrior_Attack04_Montage.DS_Frank_RPG_Warrior_Attack04_Montage"));
+	//if (ATTACK_COMBO_02_MONTAGE.Succeeded())
+	//{
+	//	AttackMontage_Combo02 = ATTACK_COMBO_02_MONTAGE.Object;
+	//}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_COMBO_03_MONTAGE(TEXT("/Game/AnimStarterPack/DSCharactor_AttackMontage.DSCharactor_AttackMontage"));
-	if (ATTACK_COMBO_03_MONTAGE.Succeeded())
-	{
-		AttackMontage_Combo03 = ATTACK_COMBO_03_MONTAGE.Object;
-	}
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_COMBO_03_MONTAGE(TEXT("/Game/AnimStarterPack/DSCharactor_AttackMontage.DSCharactor_AttackMontage"));
+	//if (ATTACK_COMBO_03_MONTAGE.Succeeded())
+	//{
+	//	AttackMontage_Combo03 = ATTACK_COMBO_03_MONTAGE.Object;
+	//}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_COMBO_04_MONTAGE(TEXT("/Game/AnimStarterPack/DSCharactor_AttackMontage.DSCharactor_AttackMontage"));
-	if (ATTACK_COMBO_04_MONTAGE.Succeeded())
-	{
-		AttackMontage_Combo04 = ATTACK_COMBO_04_MONTAGE.Object;
-	}
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_COMBO_04_MONTAGE(TEXT("/Game/AnimStarterPack/DSCharactor_AttackMontage.DSCharactor_AttackMontage"));
+	//if (ATTACK_COMBO_04_MONTAGE.Succeeded())
+	//{
+	//	AttackMontage_Combo04 = ATTACK_COMBO_04_MONTAGE.Object;
+	//}
 
 
 
@@ -194,6 +194,7 @@ void UDSAnimInstance::PlayAttackMontage()
 		if (!Montage_IsPlaying(AttackMontage_old))
 		{
 			Montage_Play(AttackMontage_old, 1.0f);
+			DSLOG(Warning, TEXT("AttackMontage_old"));
 			break;
 		}
 	}
@@ -203,6 +204,7 @@ void UDSAnimInstance::PlayAttackMontage()
 		if (!Montage_IsPlaying(AttackMontage_Combo01))
 		{
 			Montage_Play(AttackMontage_Combo01, 1.0f);
+			DSLOG(Warning, TEXT("AttackMontage_Combo01"));
 			break;
 		}
 	}
@@ -212,6 +214,7 @@ void UDSAnimInstance::PlayAttackMontage()
 		if (!Montage_IsPlaying(AttackMontage_Combo02))
 		{
 			Montage_Play(AttackMontage_Combo02, 1.0f);
+			DSLOG(Warning, TEXT("AttackMontage_Combo02"));
 			break;
 		}
 	}
@@ -221,6 +224,7 @@ void UDSAnimInstance::PlayAttackMontage()
 		if (!Montage_IsPlaying(AttackMontage_Combo03))
 		{
 			Montage_Play(AttackMontage_Combo03, 1.0f);
+			DSLOG(Warning, TEXT("AttackMontage_Combo03"));
 			break;
 		}
 	}
@@ -230,6 +234,7 @@ void UDSAnimInstance::PlayAttackMontage()
 		if (!Montage_IsPlaying(AttackMontage_Combo04))
 		{
 			Montage_Play(AttackMontage_Combo04, 1.0f);
+			DSLOG(Warning, TEXT("AttackMontage_Combo04"));
 			break;
 		}
 	}
@@ -516,10 +521,10 @@ bool UDSAnimInstance::AutoAttackCombo(int nAttackComboType)
 
 void UDSAnimInstance::SetAttackComboType(int nAttackComboType)
 {
-	APawn* pPawn = TryGetPawnOwner();
-	ADSCharacter* pDSCharacter = Cast<ADSCharacter>(pPawn);
+	//APawn* pPawn = TryGetPawnOwner();
+	//ADSCharacter* pDSCharacter = Cast<ADSCharacter>(pPawn);
 
-	m_nAttackComboType = pDSCharacter->GetAttackComboType();
+	m_nAttackComboType = nAttackComboType;
 }
 
 UAnimMontage* UDSAnimInstance::GetRollBackward()
