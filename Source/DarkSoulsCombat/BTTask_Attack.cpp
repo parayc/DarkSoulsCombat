@@ -11,6 +11,7 @@ UBTTask_Attack::UBTTask_Attack()
 	bNotifyTick = true;
 	nAttackCnt = 0;
 	IsAttacking = false;
+	m_nAttackComboType = 1;
 }
 
 EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -22,11 +23,23 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	{
 		return EBTNodeResult::Failed;
 	}
+	
+	int nMeleeAttackType = OwnerComp.GetBlackboardComponent()->GetValueAsInt(ADSAIController::nMeleeAttackTypeKey);
+
+	if (nMeleeAttackType != 1)
+	{
+		return EBTNodeResult::Failed;
+	}
+
+	DSCharacter->SetAttackComboType(nMeleeAttackType);
 
 	DSCharacter->Attack();
 	IsAttacking = true;
 
 	nAttackCnt = rand() % 4 + 1;
+
+
+
 
 	//DSCharacter->GetDSAnim()->SectionEnd
 

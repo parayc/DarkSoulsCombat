@@ -122,10 +122,14 @@ ADSCharacter::ADSCharacter()
 	MaxCombo = 4; // 콤보공격 단계 최대치
 	AttackEndComboState(); // 공격이 끝나면 콤보공격 관련된 변수 초기화해주려고
 
+	IsParrying = false;
 
 	// 어택 콤보 타입 설정 기본 1	
 	m_bGuard = false;
-	
+
+	m_bPressedMouseLeft = false;
+	m_bPressedMouseRight = false;
+
 	m_bPressedGuard = false;
 	m_bPressedRun = false;
 	m_bRolling = false;
@@ -645,53 +649,65 @@ NextAttackCheck 노티파이 발생전에
 // 일반공격 함수
 void ADSCharacter::Attack()
 {
-	// 공중공격
-	if (GetMovementComponent()->IsFalling())
+	m_bPressedMouseLeft = true;
+
+	if (m_bPressedMouseLeft && m_bPressedMouseRight)
 	{
-		if (DSAnim->IsRolling() == true)
-		{
-			return;
-		}
-
-		DSAnim->PlayJumpAttackMontage();
-
-		//if (AttackAudioComponent && AttackSoundCue)
-		//{
-		//	AttackAudioComponent->Play(0.f);
-		//}
+		DSCHECK(IsParrying);
+		Parrying();
 	}
 	else
 	{
-		if (DSAnim->IsRolling() == true)
+		// 공중공격
+		if (GetMovementComponent()->IsFalling())
 		{
-			return;
-		}
+			if (DSAnim->IsRolling() == true)
+			{
+				return;
+			}
 
-		// 공격중이라면 첫회 공격차에서는 여기 안탐 2번째 콤보부터 탐
-		if (IsAttacking)
-		{
-			DSCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo))
+			DSAnim->PlayJumpAttackMontage();
 
-				if (CanNextCombo)
-				{
-					IsComboInputOn = true;
-
-				}
+			//if (AttackAudioComponent && AttackSoundCue)
+			//{
+			//	AttackAudioComponent->Play(0.f);
+			//}
 		}
 		else
 		{
-			DSCHECK(CurrentCombo == 0);
-			AttackStartComboState();
-			DSAnim->PlayAttackMontage();
-			//DSAnim->JumpToAttackMontageSection(CurrentCombo);
-			IsAttacking = true;
-
-	/*		if (AttackAudioComponent && AttackSoundCue)
+			if (DSAnim->IsRolling() == true)
 			{
-				AttackAudioComponent->Play(0.f);
-			}*/
+				return;
+			}
+
+			// 공격중이라면 첫회 공격차에서는 여기 안탐 2번째 콤보부터 탐
+			if (IsAttacking)
+			{
+				DSCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo))
+
+					if (CanNextCombo)
+					{
+						IsComboInputOn = true;
+
+					}
+			}
+			else
+			{
+				DSCHECK(CurrentCombo == 0);
+				AttackStartComboState();
+				DSAnim->PlayAttackMontage();
+				//DSAnim->JumpToAttackMontageSection(CurrentCombo);
+				IsAttacking = true;
+
+				/*		if (AttackAudioComponent && AttackSoundCue)
+						{
+							AttackAudioComponent->Play(0.f);
+						}*/
+			}
 		}
 	}
+
+	m_bPressedMouseLeft = false;
 }
 
 void ADSCharacter::JumpAttack()
@@ -904,23 +920,35 @@ void ADSCharacter::StopRun()
 
 void ADSCharacter::StartGuard()
 {
-	//DSLOG(Warning, TEXT("StartGuard"));
+	m_bPressedMouseRight = true;
 
-	DSAnim->SetGuardInputCheck(true);
-
-	m_bPressedGuard = true;
-
-	SetGuard(true);
-
-
-	if (IsPlayerControlled())
+	if (m_bPressedMouseLeft && m_bPressedMouseRight)
 	{
-		GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+		DSCHECK(IsParrying);
+		Parrying();
 	}
 	else
 	{
-		GetCharacterMovement()->MaxWalkSpeed = 180.0f;
+		//DSLOG(Warning, TEXT("StartGuard"));
+
+		DSAnim->SetGuardInputCheck(true);
+
+		m_bPressedGuard = true;
+
+		SetGuard(true);
+
+
+		if (IsPlayerControlled())
+		{
+			GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+		}
+		else
+		{
+			GetCharacterMovement()->MaxWalkSpeed = 180.0f;
+		}
 	}
+
+	m_bPressedMouseRight = false;
 }
 
 void ADSCharacter::StopGuard()
@@ -1047,4 +1075,17 @@ void ADSCharacter::PlayKnockBack(float fDistance)
 	FVector KnockBackLocation = GetActorLocation() + (BackVector * fDistance);
 
 	SetActorLocation(KnockBackLocation);
+}
+
+void ADSCharacter::Parrying()
+{
+	if (IsParrying)
+	{
+		return;
+	}
+
+	IsParrying = true;
+
+	// 패링 몽타주 시작
+
 }

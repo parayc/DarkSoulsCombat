@@ -24,7 +24,7 @@ protected:
 
 private:
 	int nAttackCnt;
-	
+	int m_nAttackComboType;
 
 	bool IsAttacking;
 	

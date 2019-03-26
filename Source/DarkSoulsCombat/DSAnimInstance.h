@@ -128,6 +128,9 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* JumpAttackMontage_Combo01;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Parrying, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* ParryingMontage;
+
 
 
 

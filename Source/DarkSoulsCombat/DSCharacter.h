@@ -83,6 +83,9 @@ public:
 	void AttackStartComboState();
 	void AttackEndComboState();
 
+	void Parrying();
+	bool IsParrying;
+
 	FOnAttackEndDelegate OnAttackEnd;
 	FOnRollingEndDelegate OnRollingEnd;
 	FOnAttackComboTypeChange OnAttackComboTypeChange;
@@ -137,6 +140,9 @@ private:
 	int32 nCurrentInputDir;
 	
 	int32 nAttackComboType;
+
+	bool m_bPressedMouseLeft;
+	bool m_bPressedMouseRight;
 
 	bool m_bPressedRun;
 	bool m_bPressedGuard;

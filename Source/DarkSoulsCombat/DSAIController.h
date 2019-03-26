@@ -35,6 +35,8 @@ public:
 	static const FName eAICombatStateKey;
 	static const FName fDeltaSecSumKey;
 	static const FName IsDeadKey;
+	static const FName nMeleeAttackTypeKey;
+
 
 
 private:

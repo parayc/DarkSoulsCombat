@@ -26,11 +26,11 @@ UDSAnimInstance::UDSAnimInstance()
 		AttackMontage_Combo01 = ATTACK_COMBO_01_MONTAGE.Object;
 	}
 
-	//static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_COMBO_02_MONTAGE(TEXT("/Game/Frank_RPG_Warrior/Animations/DS_Mannequin_RM/DS_Frank_RPG_Warrior_Attack04_Montage.DS_Frank_RPG_Warrior_Attack04_Montage"));
-	//if (ATTACK_COMBO_02_MONTAGE.Succeeded())
-	//{
-	//	AttackMontage_Combo02 = ATTACK_COMBO_02_MONTAGE.Object;
-	//}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_COMBO_02_MONTAGE(TEXT("/Game/Frank_RPG_Warrior/Animations/DS_Mannequin_RM/DS_Frank_RPG_Warrior_Combo04Montage.DS_Frank_RPG_Warrior_Combo04Montage"));
+	if (ATTACK_COMBO_02_MONTAGE.Succeeded())
+	{
+		AttackMontage_Combo02 = ATTACK_COMBO_02_MONTAGE.Object;
+	}
 
 	//static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_COMBO_03_MONTAGE(TEXT("/Game/AnimStarterPack/DSCharactor_AttackMontage.DSCharactor_AttackMontage"));
 	//if (ATTACK_COMBO_03_MONTAGE.Succeeded())
@@ -53,8 +53,11 @@ UDSAnimInstance::UDSAnimInstance()
 		JumpAttackMontage_Combo01 = JUMP_ATTACK_COMBO_01_MONTAGE.Object;
 	}
 
-
-
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> PARRYING_MONTAGE(TEXT("/Game/Frank_RPG_Warrior/Animations/DS_Mannequin_RM/DS_Frank_RPG_Warrior_ShieldAttack01.DS_Frank_RPG_Warrior_ShieldAttack01"));
+	if (PARRYING_MONTAGE.Succeeded())
+	{
+		ParryingMontage = PARRYING_MONTAGE.Object;
+	}
 
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> HIT_REACTION_FRONT(TEXT("/Game/JogMoveAnim/DS_HitReaction_Front.DS_HitReaction_Front"));
