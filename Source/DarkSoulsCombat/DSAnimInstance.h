@@ -60,6 +60,7 @@ public:
 
 	bool AutoAttackCombo(int nAttackComboType);
 
+	void PlayParryingMontage();
 
 	UAnimMontage* GetRollBackward();
 

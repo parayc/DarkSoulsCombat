@@ -19,13 +19,12 @@ enum class EControlMode
 DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnRollingEndDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnAttackComboTypeChange);
+DECLARE_MULTICAST_DELEGATE(FOnMouseLRClickCheckDelegate);
 
 UCLASS()
 class DARKSOULSCOMBAT_API ADSCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
-
 
 public:
 	// Sets default values for this character's properties
@@ -83,12 +82,15 @@ public:
 	void AttackStartComboState();
 	void AttackEndComboState();
 
-	void Parrying();
+
+
 	bool IsParrying;
 
 	FOnAttackEndDelegate OnAttackEnd;
 	FOnRollingEndDelegate OnRollingEnd;
 	FOnAttackComboTypeChange OnAttackComboTypeChange;
+	FOnMouseLRClickCheckDelegate OnMouseLRClickCheck;
+
 
 
 	UAudioComponent* FootStepAudioComponent;
@@ -116,6 +118,9 @@ public:
 
 	void StartGuard();
 	void StopGuard();
+
+	void MouseLeftClick();
+	void MouseRightClick();
 
 	void ForwardRoll();
 
@@ -150,6 +155,8 @@ private:
 	bool m_bGuard;
 
 	bool m_bRolling;
+
+	float m_fMouseLRClickCheckTime;
 
 	UPROPERTY()
 		class UDSAnimInstance* DSAnim;
@@ -187,6 +194,11 @@ private:
 	UFUNCTION()
 		void OnRollingMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
+	UFUNCTION()
+		void OnParryingMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+	UFUNCTION()
+		void OnParrying();
 
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))

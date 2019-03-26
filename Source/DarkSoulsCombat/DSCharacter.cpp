@@ -134,6 +134,8 @@ ADSCharacter::ADSCharacter()
 	m_bPressedRun = false;
 	m_bRolling = false;
 
+	m_fMouseLRClickCheckTime = 0;
+
 	SetControlMode(eControlMode);
 }
 
@@ -151,6 +153,11 @@ void ADSCharacter::PostInitializeComponents()
 
 	DSAnim->OnMontageEnded.AddDynamic(this, &ADSCharacter::OnRollingMontageEnded);
 
+	DSAnim->OnMontageEnded.AddDynamic(this, &ADSCharacter::OnParryingMontageEnded);
+
+	OnMouseLRClickCheck.AddLambda([=]() -> void {
+		OnParrying();
+	});
 
 
 	// 콤보공격 관련 기능
@@ -268,6 +275,23 @@ void ADSCharacter::Tick(float DeltaTime)
 	//	}
 	//}
 
+	if (m_bPressedMouseLeft || m_bPressedMouseRight)
+	{
+		m_fMouseLRClickCheckTime += DeltaTime;
+
+		if (m_fMouseLRClickCheckTime >= 0.15f)
+		{
+			m_bPressedMouseLeft = false;
+			m_bPressedMouseRight = false;
+			m_fMouseLRClickCheckTime = 0;
+		}
+	}
+
+	if (m_bPressedMouseLeft && m_bPressedMouseRight)
+	{
+		OnMouseLRClickCheck.Broadcast();
+	}
+
 
 
 	RadialDetection(DeltaTime);
@@ -291,6 +315,8 @@ void ADSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction(TEXT("Guard"), EInputEvent::IE_Pressed, this, &ADSCharacter::StartGuard);
 	PlayerInputComponent->BindAction(TEXT("Guard"), EInputEvent::IE_Released, this, &ADSCharacter::StopGuard);
 	PlayerInputComponent->BindAction(TEXT("ForwardRoll"), EInputEvent::IE_Pressed, this, &ADSCharacter::ForwardRoll);
+	PlayerInputComponent->BindAction(TEXT("MouseLeftClick"), EInputEvent::IE_Released, this, &ADSCharacter::MouseLeftClick);
+	PlayerInputComponent->BindAction(TEXT("MouseRightClick"), EInputEvent::IE_Pressed, this, &ADSCharacter::MouseRightClick);
 	
 }
 
@@ -649,7 +675,7 @@ NextAttackCheck 노티파이 발생전에
 // 일반공격 함수
 void ADSCharacter::Attack()
 {
-	m_bPressedMouseLeft = true;
+	//m_bPressedMouseLeft = true;
 
 	//if (m_bPressedMouseLeft && m_bPressedMouseRight)
 	//{
@@ -707,7 +733,7 @@ void ADSCharacter::Attack()
 		//}
 	//}
 
-	m_bPressedMouseLeft = false;
+	//m_bPressedMouseLeft = false;
 }
 
 void ADSCharacter::JumpAttack()
@@ -920,15 +946,15 @@ void ADSCharacter::StopRun()
 
 void ADSCharacter::StartGuard()
 {
-	m_bPressedMouseRight = true;
+	//m_bPressedMouseRight = true;
 
-	if (m_bPressedMouseLeft && m_bPressedMouseRight)
+	/*if (m_bPressedMouseLeft && m_bPressedMouseRight)
 	{
 		DSCHECK(IsParrying);
 		Parrying();
-	}
-	else
-	{
+	}*/
+	//else
+	//{
 		//DSLOG(Warning, TEXT("StartGuard"));
 
 		DSAnim->SetGuardInputCheck(true);
@@ -946,9 +972,9 @@ void ADSCharacter::StartGuard()
 		{
 			GetCharacterMovement()->MaxWalkSpeed = 180.0f;
 		}
-	}
+	//}
 
-	m_bPressedMouseRight = false;
+	//m_bPressedMouseRight = false;
 }
 
 void ADSCharacter::StopGuard()
@@ -1077,7 +1103,7 @@ void ADSCharacter::PlayKnockBack(float fDistance)
 	SetActorLocation(KnockBackLocation);
 }
 
-void ADSCharacter::Parrying()
+void ADSCharacter::OnParrying()
 {
 	if (IsParrying)
 	{
@@ -1087,5 +1113,37 @@ void ADSCharacter::Parrying()
 	IsParrying = true;
 
 	// 패링 몽타주 시작
+	DSAnim->PlayParryingMontage();
+}
 
+void ADSCharacter::OnParryingMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	DSCHECK(IsParrying);
+
+	IsParrying = false;
+}
+
+
+void ADSCharacter::MouseLeftClick()
+{
+	m_bPressedMouseLeft = true;
+
+	//if (m_bPressedMouseLeft && m_bPressedMouseRight)
+	//{
+	//	Parrying();
+	//}
+
+	//m_bPressedMouseLeft = false;
+}
+
+void ADSCharacter::MouseRightClick()
+{
+	m_bPressedMouseRight = true;
+
+	//if (m_bPressedMouseLeft && m_bPressedMouseRight)
+	//{
+	//	Parrying();
+	//}
+
+	//m_bPressedMouseRight = false;
 }

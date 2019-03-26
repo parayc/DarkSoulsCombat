@@ -53,7 +53,7 @@ UDSAnimInstance::UDSAnimInstance()
 		JumpAttackMontage_Combo01 = JUMP_ATTACK_COMBO_01_MONTAGE.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> PARRYING_MONTAGE(TEXT("/Game/Frank_RPG_Warrior/Animations/DS_Mannequin_RM/DS_Frank_RPG_Warrior_ShieldAttack01.DS_Frank_RPG_Warrior_ShieldAttack01"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> PARRYING_MONTAGE(TEXT("/Game/Frank_RPG_Warrior/Animations/DS_Mannequin_RM/DS_Frank_RPG_Warrior_ShieldAttack01_Montage.DS_Frank_RPG_Warrior_ShieldAttack01_Montage"));
 	if (PARRYING_MONTAGE.Succeeded())
 	{
 		ParryingMontage = PARRYING_MONTAGE.Object;
@@ -244,6 +244,16 @@ void UDSAnimInstance::PlayAttackMontage()
 
 	}
 }
+
+void UDSAnimInstance::PlayParryingMontage()
+{
+	if (!Montage_IsPlaying(ParryingMontage))
+	{
+		Montage_Play(ParryingMontage, 1.0f);
+		DSLOG(Warning, TEXT("ParryingMontage"));
+	}
+}
+
 
 void UDSAnimInstance::PlayJumpAttackMontage()
 {
