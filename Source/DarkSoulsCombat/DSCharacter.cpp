@@ -651,61 +651,61 @@ void ADSCharacter::Attack()
 {
 	m_bPressedMouseLeft = true;
 
-	if (m_bPressedMouseLeft && m_bPressedMouseRight)
-	{
-		DSCHECK(IsParrying);
-		Parrying();
-	}
-	else
-	{
+	//if (m_bPressedMouseLeft && m_bPressedMouseRight)
+	//{
+	//	DSCHECK(IsParrying);
+	//	Parrying();
+	//}
+	//else
+	//{
 		// 공중공격
-		if (GetMovementComponent()->IsFalling())
+		//if (GetMovementComponent()->IsFalling())
+		//{
+		//	if (DSAnim->IsRolling() == true)
+		//	{
+		//		return;
+		//	}
+
+		//	DSAnim->PlayJumpAttackMontage();
+
+		//	//if (AttackAudioComponent && AttackSoundCue)
+		//	//{
+		//	//	AttackAudioComponent->Play(0.f);
+		//	//}
+		//}
+		//else
+		//{
+		if (DSAnim->IsRolling() == true)
 		{
-			if (DSAnim->IsRolling() == true)
-			{
-				return;
-			}
+			return;
+		}
 
-			DSAnim->PlayJumpAttackMontage();
+		// 공격중이라면 첫회 공격차에서는 여기 안탐 2번째 콤보부터 탐
+		if (IsAttacking)
+		{
+			DSCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo))
 
-			//if (AttackAudioComponent && AttackSoundCue)
-			//{
-			//	AttackAudioComponent->Play(0.f);
-			//}
+				if (CanNextCombo)
+				{
+					IsComboInputOn = true;
+
+				}
 		}
 		else
 		{
-			if (DSAnim->IsRolling() == true)
-			{
-				return;
-			}
+			DSCHECK(CurrentCombo == 0);
+			AttackStartComboState();
+			DSAnim->PlayAttackMontage();
+			//DSAnim->JumpToAttackMontageSection(CurrentCombo);
+			IsAttacking = true;
 
-			// 공격중이라면 첫회 공격차에서는 여기 안탐 2번째 콤보부터 탐
-			if (IsAttacking)
-			{
-				DSCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo))
-
-					if (CanNextCombo)
+			/*		if (AttackAudioComponent && AttackSoundCue)
 					{
-						IsComboInputOn = true;
-
-					}
-			}
-			else
-			{
-				DSCHECK(CurrentCombo == 0);
-				AttackStartComboState();
-				DSAnim->PlayAttackMontage();
-				//DSAnim->JumpToAttackMontageSection(CurrentCombo);
-				IsAttacking = true;
-
-				/*		if (AttackAudioComponent && AttackSoundCue)
-						{
-							AttackAudioComponent->Play(0.f);
-						}*/
-			}
+						AttackAudioComponent->Play(0.f);
+					}*/
 		}
-	}
+		//}
+	//}
 
 	m_bPressedMouseLeft = false;
 }
