@@ -34,6 +34,8 @@ public:
 	void PlayHitReactionLeft();
 	void PlayHitReactionRight();
 
+	void PlayParryingHitMontage();
+
 	// 콤보 공격관련 함수
 	void JumpToAttackMontageSection(int32 NewSection);
 
@@ -50,6 +52,8 @@ public:
 	void SetDeadAnim(bool bValue);
 	void SetRunInputCheck(bool bValue);
 	void SetGuardInputCheck(bool bValue);
+
+	void PlayShieldBlockMontage();
 
 	void PlayRollMontage();
 	bool IsRolling();
@@ -131,8 +135,13 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Parrying, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* ParryingMontage;
+	
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Parrying, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* ParryingHitMontage;
 
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Guard, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* ShieldBlockMontage;
 
 
 
@@ -148,6 +157,7 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Hit, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* HitReactionRight;
 
+	
 	// Rolling
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = DodgeRoll, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* RollBackward;

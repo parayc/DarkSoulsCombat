@@ -137,6 +137,12 @@ public:
 
 	void PlayKnockBack(float fDistance);
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool IsAttacking;
+
+	UFUNCTION()
+	void OnParrying();
+
 private:
 	EControlMode eControlMode = EControlMode::eNomal;
 
@@ -197,12 +203,10 @@ private:
 	UFUNCTION()
 		void OnParryingMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
-	UFUNCTION()
-		void OnParrying();
 
 
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-		bool IsAttacking;
+
+
 
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))

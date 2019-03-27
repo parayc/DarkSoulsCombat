@@ -60,6 +60,24 @@ UDSAnimInstance::UDSAnimInstance()
 	}
 
 
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> PARRYING_HIT_MONTAGE(TEXT("/Game/Frank_RPG_Warrior/Animations/DS_Mannequin_RM/DS_Frank_RPG_Warrior_Hit01_Montage.DS_Frank_RPG_Warrior_Hit01_Montage"));
+	if (PARRYING_HIT_MONTAGE.Succeeded())
+	{
+		ParryingHitMontage = PARRYING_HIT_MONTAGE.Object;
+	}
+
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SHIELDBLOCK_MONTAGE(TEXT("/Game/Frank_RPG_Warrior/Animations/DS_Mannequin_RM/DS_Frank_RPG_Warrior_Block_Montage.DS_Frank_RPG_Warrior_Block_Montage"));
+	if (SHIELDBLOCK_MONTAGE.Succeeded())
+	{
+		ShieldBlockMontage = SHIELDBLOCK_MONTAGE.Object;
+	}
+
+
+	
+
+
+
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> HIT_REACTION_FRONT(TEXT("/Game/JogMoveAnim/DS_HitReaction_Front.DS_HitReaction_Front"));
 	if (HIT_REACTION_FRONT.Succeeded())
 	{
@@ -204,7 +222,7 @@ void UDSAnimInstance::PlayAttackMontage()
 
 	case 1:
 	{
-		if (!Montage_IsPlaying(AttackMontage_Combo01))
+		if (!Montage_IsPlaying(AttackMontage_Combo01) && !Montage_IsPlaying(AttackMontage_Combo02))
 		{
 			Montage_Play(AttackMontage_Combo01, 1.0f);
 			DSLOG(Warning, TEXT("AttackMontage_Combo01"));
@@ -214,7 +232,7 @@ void UDSAnimInstance::PlayAttackMontage()
 
 	case 2:
 	{
-		if (!Montage_IsPlaying(AttackMontage_Combo02))
+		if (!Montage_IsPlaying(AttackMontage_Combo02) && !Montage_IsPlaying(AttackMontage_Combo01))
 		{
 			Montage_Play(AttackMontage_Combo02, 1.0f);
 			DSLOG(Warning, TEXT("AttackMontage_Combo02"));
@@ -253,6 +271,27 @@ void UDSAnimInstance::PlayParryingMontage()
 		DSLOG(Warning, TEXT("ParryingMontage"));
 	}
 }
+
+
+void UDSAnimInstance::PlayParryingHitMontage()
+{
+	if (!Montage_IsPlaying(ParryingHitMontage))
+	{
+		Montage_Play(ParryingHitMontage, 1.0f);
+		DSLOG(Warning, TEXT("ParryingHitMontage"));
+	}
+}
+
+
+void UDSAnimInstance::PlayShieldBlockMontage()
+{
+	if (!Montage_IsPlaying(ShieldBlockMontage))
+	{
+		Montage_Play(ShieldBlockMontage, 1.0f);
+		DSLOG(Warning, TEXT("ShieldBlockMontage"));
+	}
+}
+
 
 
 void UDSAnimInstance::PlayJumpAttackMontage()

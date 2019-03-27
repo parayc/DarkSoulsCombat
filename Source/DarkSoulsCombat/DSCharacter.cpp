@@ -763,7 +763,7 @@ void ADSCharacter::AttackCheck()
 		GetActorLocation() + GetActorForwardVector() * 200.0f, // 캐릭터 정면 2미터까지 충돌 발생여부 확인
 		FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel4,
-		FCollisionShape::MakeSphere(50.0f),
+		FCollisionShape::MakeSphere(30.0f),
 		Params
 		);
 
@@ -772,6 +772,7 @@ void ADSCharacter::AttackCheck()
 		if (HitResult.Actor.IsValid())
 		{
 			ADSShield* DSShield = Cast<ADSShield>(HitResult.GetActor());
+
 
 			if (DSShield)
 			{
@@ -785,13 +786,21 @@ void ADSCharacter::AttackCheck()
 				// 
 				if (DSShield != CurShield)
 				{
+					ADSCharacter* GuardCharacter = Cast<ADSCharacter>(DSShield->GetAttachParentActor());
+
 					DSLOG(Warning, TEXT("Shield Hit!!!"));
 					DSShield->PlayHitSound();
-					
-					ADSCharacter* TempCharacter = Cast<ADSCharacter>(DSShield->GetAttachParentActor());
-					TempCharacter->PlayKnockBack(20.f);
-				}
 
+					if (GuardCharacter->IsParrying)
+					{
+						DSAnim->PlayParryingHitMontage();
+					}
+					else
+					{
+						GuardCharacter->DSAnim->PlayShieldBlockMontage();
+						GuardCharacter->PlayKnockBack(40.f);
+					}
+				}
 			}
 
 
@@ -1060,6 +1069,11 @@ void ADSCharacter::SetAttackComboType(int nValue)
 {
 	nAttackComboType = nValue;
 	DSAnim->SetAttackComboType(nAttackComboType);
+	
+	if (IsPlayerControlled())
+	{
+		DSLOG(Warning, TEXT("SetAttackComboType : %d"), nValue);
+	}
 }
 
 int32 ADSCharacter::GetAttackComboType()

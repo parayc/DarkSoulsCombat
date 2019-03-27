@@ -12,6 +12,7 @@ UBTTask_Attack::UBTTask_Attack()
 	nAttackCnt = 0;
 	IsAttacking = false;
 	m_nAttackComboType = 1;
+	m_nRandParrying = 0;
 }
 
 EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -37,7 +38,7 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	IsAttacking = true;
 
 	nAttackCnt = rand() % 4 + 1;
-
+	//m_nRandParrying = rand() % 3;
 
 
 
@@ -108,6 +109,15 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	}
 
+	if (Target->IsAttacking)
+	{
+		if (m_nRandParrying == 0)
+		{
+			DSCharacter->OnParrying();
+			OwnerComp.GetBlackboardComponent()->SetValueAsEnum(ADSAIController::eAICombatStateKey, 0);
+			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		}
+	}
 
 	// AI의 콤보공격을 위한 함수
 	FName CurrentSection = DSCharacter->GetDSAnim()->Montage_GetCurrentSection();

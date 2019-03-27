@@ -26,6 +26,8 @@ protected:
 public:
 	bool IsAttacking;
 
+	int m_nRandParrying;
+
 	int m_nAttackCnt;
 
 };
