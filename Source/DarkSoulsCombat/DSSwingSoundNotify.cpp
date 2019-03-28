@@ -5,6 +5,7 @@
 
 void UDSSwingSoundNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
+	
 
 	if (MeshComp != NULL && MeshComp->GetOwner() != NULL)
 	{

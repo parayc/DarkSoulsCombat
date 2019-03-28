@@ -136,6 +136,10 @@ ADSCharacter::ADSCharacter()
 
 	m_fMouseLRClickCheckTime = 0;
 
+	m_bCanParrying = false;
+
+	m_bStun = false;
+
 	SetControlMode(eControlMode);
 }
 
@@ -148,6 +152,8 @@ void ADSCharacter::PostInitializeComponents()
 	SetAttackComboType(1);
 
 	DSAnim->OnAttackHit.AddUObject(this, &ADSCharacter::AttackCheck);
+
+	DSAnim->OnParryingCheck.AddUObject(this, &ADSCharacter::ParryingCheck);
 
 	DSAnim->OnMontageEnded.AddDynamic(this, &ADSCharacter::OnAttackMontageEnded);
 
@@ -195,7 +201,18 @@ void ADSCharacter::PostInitializeComponents()
 		LastAttacker->Target();
 	});
 
-	
+	DSAnim->OnParryingTimeStart.AddLambda([=]() -> void {
+		m_bCanParrying = true;
+		DSLOG(Warning, TEXT("m_bCanParrying = true"));
+	});
+
+	DSAnim->OnParryingTimeEnd.AddLambda([=]() -> void {
+		m_bCanParrying = false;
+		DSLOG(Warning, TEXT("m_bCanParrying = false"));
+	});
+
+
+
 }
 
 // Called when the game starts or when spawned
@@ -275,23 +292,28 @@ void ADSCharacter::Tick(float DeltaTime)
 	//	}
 	//}
 
-	if (m_bPressedMouseLeft || m_bPressedMouseRight)
-	{
-		m_fMouseLRClickCheckTime += DeltaTime;
+	//if (m_bPressedMouseLeft || m_bPressedMouseRight)
+	//{
+	//	m_fMouseLRClickCheckTime += DeltaTime;
 
-		if (m_fMouseLRClickCheckTime >= 0.15f)
-		{
-			m_bPressedMouseLeft = false;
-			m_bPressedMouseRight = false;
-			m_fMouseLRClickCheckTime = 0;
-		}
-	}
+	//	if (m_fMouseLRClickCheckTime >= 0.15f)
+	//	{
+	//		m_bPressedMouseLeft = false;
+	//		m_bPressedMouseRight = false;
+	//		m_fMouseLRClickCheckTime = 0;
+	//	}
+	//}
 
-	if (m_bPressedMouseLeft && m_bPressedMouseRight)
+	//if (m_bPressedMouseLeft && m_bPressedMouseRight)
+	//{
+	//	OnMouseLRClickCheck.Broadcast();
+	//}
+
+/*
+	if (m_bPressedMouseLeft && m_bPressedGuard)
 	{
 		OnMouseLRClickCheck.Broadcast();
-	}
-
+	}*/
 
 
 	RadialDetection(DeltaTime);
@@ -317,7 +339,8 @@ void ADSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction(TEXT("ForwardRoll"), EInputEvent::IE_Pressed, this, &ADSCharacter::ForwardRoll);
 	PlayerInputComponent->BindAction(TEXT("MouseLeftClick"), EInputEvent::IE_Released, this, &ADSCharacter::MouseLeftClick);
 	PlayerInputComponent->BindAction(TEXT("MouseRightClick"), EInputEvent::IE_Pressed, this, &ADSCharacter::MouseRightClick);
-	
+	PlayerInputComponent->BindAction(TEXT("Parrying"), EInputEvent::IE_Pressed, this, &ADSCharacter::Parrying);
+
 }
 
 void ADSCharacter::UpDown(float NewAxisValue)
@@ -326,6 +349,7 @@ void ADSCharacter::UpDown(float NewAxisValue)
 	{
 		return;
 	}
+	if (IsStun()) return;
 
 	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), NewAxisValue);
 
@@ -340,6 +364,7 @@ void ADSCharacter::LeftRight(float NewAxisValue)
 	{
 		return;
 	}
+	if (IsStun()) return;
 
 
 
@@ -358,11 +383,15 @@ void ADSCharacter::LeftRight(float NewAxisValue)
 
 void ADSCharacter::LookUp(float NewAxisValue)
 {
+	if (IsStun()) return;
+
 	AddControllerPitchInput(NewAxisValue);
 }
 
 void ADSCharacter::Turn(float NewAxisValue)
 {
+	if (IsStun()) return;
+
 	AddControllerYawInput(NewAxisValue);
 }
 
@@ -675,6 +704,10 @@ NextAttackCheck 노티파이 발생전에
 // 일반공격 함수
 void ADSCharacter::Attack()
 {
+	if (m_bGuard) return;
+	if (IsStun()) return;
+
+
 	//m_bPressedMouseLeft = true;
 
 	//if (m_bPressedMouseLeft && m_bPressedMouseRight)
@@ -791,15 +824,9 @@ void ADSCharacter::AttackCheck()
 					DSLOG(Warning, TEXT("Shield Hit!!!"));
 					DSShield->PlayHitSound();
 
-					if (GuardCharacter->IsParrying)
-					{
-						DSAnim->PlayParryingHitMontage();
-					}
-					else
-					{
-						GuardCharacter->DSAnim->PlayShieldBlockMontage();
-						GuardCharacter->PlayKnockBack(40.f);
-					}
+					GuardCharacter->DSAnim->PlayShieldBlockMontage();
+					GuardCharacter->PlayKnockBack(40.f);
+
 				}
 			}
 
@@ -911,6 +938,9 @@ void ADSCharacter::PossessedBy(AController* NewController)
 
 void ADSCharacter::StartRun()
 {
+
+	if (IsStun()) return;
+
 	DSAnim->SetRunInputCheck(true);
 	
 	m_bPressedRun = true;
@@ -955,6 +985,8 @@ void ADSCharacter::StopRun()
 
 void ADSCharacter::StartGuard()
 {
+	if (IsStun()) return;
+
 	//m_bPressedMouseRight = true;
 
 	/*if (m_bPressedMouseLeft && m_bPressedMouseRight)
@@ -1019,6 +1051,8 @@ bool ADSCharacter::GetRunInputCheck()
 
 void ADSCharacter::ForwardRoll()
 {
+	if (IsStun()) return;
+
 	if (IsGuard())
 	{
 		SetGuard(false);
@@ -1130,6 +1164,42 @@ void ADSCharacter::OnParrying()
 	DSAnim->PlayParryingMontage();
 }
 
+void ADSCharacter::ParryingCheck()
+{
+	FHitResult HitResult;
+	FCollisionQueryParams Params(NAME_None, false, this);
+	bool bResult = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		GetActorLocation(),
+		GetActorLocation() + GetActorForwardVector() * 300.0f, // 캐릭터 정면 2미터까지 충돌 발생여부 확인
+		FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel6,
+		FCollisionShape::MakeSphere(50.0f),
+		Params
+	);
+
+	if (bResult)
+	{
+		if (HitResult.Actor.IsValid())
+		{
+			ADSCharacter* DSCharacter = Cast<ADSCharacter>(HitResult.GetActor());
+
+			if (DSCharacter != nullptr)
+			{
+				if (DSCharacter->m_bCanParrying)
+				{
+					DSCharacter->DSAnim->PlayParryingHitMontage();
+					DSLOG(Warning, TEXT("PlayParryingHitMontage!!!!!!!!!!!!!!!!!!!!!!!!!!"));
+					DSCharacter->SetStun(true);
+				}
+				DSLOG(Warning, TEXT("Hit Actor Name : %s"), *HitResult.Actor->GetName());
+			}
+		}
+	}
+}
+
+
+
 void ADSCharacter::OnParryingMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	DSCHECK(IsParrying);
@@ -1147,7 +1217,7 @@ void ADSCharacter::MouseLeftClick()
 	//	Parrying();
 	//}
 
-	//m_bPressedMouseLeft = false;
+	m_bPressedMouseLeft = false;
 }
 
 void ADSCharacter::MouseRightClick()
@@ -1160,4 +1230,22 @@ void ADSCharacter::MouseRightClick()
 	//}
 
 	//m_bPressedMouseRight = false;
+}
+
+void ADSCharacter::Parrying()
+{
+	if (m_bGuard)
+	{
+		OnParrying();
+	}
+}
+
+void ADSCharacter::SetStun(bool bValue)
+{
+	m_bStun = bValue;
+}
+
+bool ADSCharacter::IsStun()
+{
+	return m_bStun;
 }

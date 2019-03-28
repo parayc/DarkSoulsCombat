@@ -76,16 +76,16 @@ void UBTTaskNode_MeleeAttack02::TickTask(UBehaviorTreeComponent& OwnerComp, uint
 	}
 
 
-	if (Target->IsAttacking)
-	{
-		if (m_nRandParrying == 0)
-		{
-			DSCharacter->OnParrying();
-			DSCharacter->SetAttackComboType(1);
-			OwnerComp.GetBlackboardComponent()->SetValueAsEnum(ADSAIController::eAICombatStateKey, 0);
-			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-		}
-	}
+	//if (Target->IsAttacking)
+	//{
+	//	if (m_nRandParrying == 0)
+	//	{
+	//		DSCharacter->OnParrying();
+	//		DSCharacter->SetAttackComboType(1);
+	//		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(ADSAIController::eAICombatStateKey, 0);
+	//		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	//	}
+	//}
 
 	// AI의 콤보공격을 위한 함수
 	FName CurrentSection = DSCharacter->GetDSAnim()->Montage_GetCurrentSection();

@@ -5,7 +5,6 @@
 
 void UDSFootStepNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-
 	if (MeshComp != NULL && MeshComp->GetOwner() != NULL)
 	{
 		ADSCharacter* Character = Cast<ADSCharacter>(MeshComp->GetOwner());

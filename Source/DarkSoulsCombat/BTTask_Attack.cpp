@@ -109,15 +109,15 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	}
 
-	if (Target->IsAttacking)
-	{
-		if (m_nRandParrying == 0)
-		{
-			DSCharacter->OnParrying();
-			OwnerComp.GetBlackboardComponent()->SetValueAsEnum(ADSAIController::eAICombatStateKey, 0);
-			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-		}
-	}
+	//if (Target->IsAttacking)
+	//{
+	//	if (m_nRandParrying == 0)
+	//	{
+	//		DSCharacter->OnParrying();
+	//		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(ADSAIController::eAICombatStateKey, 0);
+	//		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	//	}
+	//}
 
 	// AI의 콤보공격을 위한 함수
 	FName CurrentSection = DSCharacter->GetDSAnim()->Montage_GetCurrentSection();
@@ -129,16 +129,13 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	// FCString::Atoi mfc 변경이랑 비슷하네 atoi atof 쓰는건
 	int nSectionNum = FCString::Atoi(*strTemp);
 
-
 	// 섹션값이 낮다면
 	if (nSectionNum != 0 && nSectionNum < nAttackCnt)
 	{
 		DSCharacter->Attack();
 	}
 
-
 	//DSCharacter->Attack();
-
 	// 어택 끝나면 테스트 종료 알려주는 함수 호출~
 	if (!IsAttacking)
 	{
