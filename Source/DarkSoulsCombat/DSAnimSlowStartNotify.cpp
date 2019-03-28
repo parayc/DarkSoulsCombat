@@ -5,5 +5,5 @@
 
 void UDSAnimSlowStartNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-	Animation->RateScale = 0.4f;
+	Animation->RateScale = 0.5f;
 }

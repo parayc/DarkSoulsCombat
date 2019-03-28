@@ -60,7 +60,7 @@ UDSAnimInstance::UDSAnimInstance()
 	}
 
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> PARRYING_HIT_MONTAGE(TEXT("/Game/Frank_RPG_Warrior/Animations/DS_Mannequin_RM/DS_Frank_RPG_Warrior_Hit01_Montage.DS_Frank_RPG_Warrior_Hit01_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> PARRYING_HIT_MONTAGE(TEXT("/Game/Frank_RPG_Warrior/Animations/DS_Mannequin_RM/DS_Frank_RPG_Warrior_Hit_Knockback_Montage.DS_Frank_RPG_Warrior_Hit_Knockback_Montage"));
 	if (PARRYING_HIT_MONTAGE.Succeeded())
 	{
 		ParryingHitMontage = PARRYING_HIT_MONTAGE.Object;

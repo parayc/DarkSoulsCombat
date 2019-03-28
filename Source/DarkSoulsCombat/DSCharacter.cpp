@@ -1189,10 +1189,10 @@ void ADSCharacter::ParryingCheck()
 				if (DSCharacter->m_bCanParrying)
 				{
 					DSCharacter->DSAnim->PlayParryingHitMontage();
-					DSLOG(Warning, TEXT("PlayParryingHitMontage!!!!!!!!!!!!!!!!!!!!!!!!!!"));
+					DSCharacter->m_bCanParrying = false;
 					DSCharacter->SetStun(true);
+					DSCharacter->HitGruntAudioComponent->Play(0.f);
 				}
-				DSLOG(Warning, TEXT("Hit Actor Name : %s"), *HitResult.Actor->GetName());
 			}
 		}
 	}
