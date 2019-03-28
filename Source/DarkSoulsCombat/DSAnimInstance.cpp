@@ -489,6 +489,27 @@ void UDSAnimInstance::AnimNotify_LastAttack()
 	OnLastAttack.Broadcast();
 }
 
+void UDSAnimInstance::AnimNotify_ParryingTimeStart()
+{
+	//DSLOG_S(Warning);
+
+	OnParryingTimeStart.Broadcast();
+}
+
+
+void UDSAnimInstance::AnimNotify_ParryingTimeEnd()
+{
+	//DSLOG_S(Warning);
+
+
+	OnParryingTimeEnd.Broadcast();
+}
+
+void UDSAnimInstance::AnimNotify_ParryingCheck()
+{
+	OnParryingCheck.Broadcast();
+}
+
 // Attack1~3 까지의 섹션이름에 맞는 섹션 네임 만들어서 리턴해주는 함수
 FName UDSAnimInstance::GetAttackMontageSectionName(int32 Section)
 {

@@ -10,6 +10,9 @@
 DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnLastAttackDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnParryingTimeStartDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnParryingTimeEndDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnParryingCheckDelegate);
 
 /**
  * 
@@ -41,9 +44,13 @@ public:
 
 	FName GetAttackMontageSectionName(int32 Section);
 
-	FOnAttackHitCheckDelegate	OnAttackHit;
-	FOnNextAttackCheckDelegate OnNextAttackCheck;
-	FOnLastAttackDelegate		OnLastAttack;
+	FOnAttackHitCheckDelegate		OnAttackHit;
+	FOnNextAttackCheckDelegate		OnNextAttackCheck;
+	FOnLastAttackDelegate			OnLastAttack;
+	FOnParryingTimeStartDelegate	OnParryingTimeStart;
+	FOnParryingTimeEndDelegate		OnParryingTimeEnd;
+	FOnParryingCheckDelegate		OnParryingCheck;
+
 
 	int m_nAttackComboType;
 	void SetAttackComboType(int nAttackComboType);
@@ -113,6 +120,15 @@ private:
 
 	UFUNCTION()
 	void AnimNotify_LeftPlant();
+
+	UFUNCTION()
+	void AnimNotify_ParryingTimeStart();
+	
+	UFUNCTION()
+	void AnimNotify_ParryingTimeEnd();
+	
+	UFUNCTION()
+	void AnimNotify_ParryingCheck();
 
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))

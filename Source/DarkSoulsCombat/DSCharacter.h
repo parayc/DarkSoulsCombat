@@ -41,6 +41,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void SetStun(bool bValue);
+	bool IsStun();
 
 	bool IsGuard();
 
@@ -78,6 +80,8 @@ public:
 	void Attack();
 	void JumpAttack();
 	void AttackCheck();
+	
+	void ParryingCheck();
 
 	void AttackStartComboState();
 	void AttackEndComboState();
@@ -143,6 +147,8 @@ public:
 	UFUNCTION()
 	void OnParrying();
 
+	void Parrying();
+
 private:
 	EControlMode eControlMode = EControlMode::eNomal;
 
@@ -151,6 +157,10 @@ private:
 	int32 nCurrentInputDir;
 	
 	int32 nAttackComboType;
+
+	bool m_bStun;
+
+	bool m_bCanParrying;
 
 	bool m_bPressedMouseLeft;
 	bool m_bPressedMouseRight;
