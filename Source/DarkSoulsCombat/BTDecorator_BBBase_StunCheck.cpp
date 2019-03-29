@@ -26,10 +26,16 @@ bool UBTDecorator_BBBase_StunCheck::CalculateRawConditionValue(UBehaviorTreeComp
 }
 
 
-//EBlackboardNotificationResult UBTDecorator_BBBase_StunCheck::OnBlackboardKeyValueChange(const UBlackboardComponent& Blackboard, FBlackboard::FKey ChangedKeyID)
-//{
-//
-//}
+EBlackboardNotificationResult UBTDecorator_BBBase_StunCheck::OnBlackboardKeyValueChange(const UBlackboardComponent& Blackboard, FBlackboard::FKey ChangedKeyID)
+{
+	EBlackboardNotificationResult eResult = Super::OnBlackboardKeyValueChange(Blackboard, ChangedKeyID);
+
+	bool IsStun = Blackboard.GetValueAsBool(ADSAIController::IsStunKey);
+	
+	IsStun ? eResult = EBlackboardNotificationResult::ContinueObserving : eResult = EBlackboardNotificationResult::RemoveObserver;
+
+	return eResult;
+}
 
 void UBTDecorator_BBBase_StunCheck::SetStunKey(bool Token)
 {
