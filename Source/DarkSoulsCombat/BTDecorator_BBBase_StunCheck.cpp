@@ -5,6 +5,14 @@
 #include "DSAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
+UBTDecorator_BBBase_StunCheck::UBTDecorator_BBBase_StunCheck()
+{
+	bAllowAbortLowerPri = true;
+	bAllowAbortNone = true;
+	bAllowAbortChildNodes = true;
+	FlowAbortMode = EBTFlowAbortMode::None;
+}
+
 bool UBTDecorator_BBBase_StunCheck::CalculateRawConditionValue(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory) const
 {
 	bool bResult = Super::CalculateRawConditionValue(OwnerComp, NodeMemory);

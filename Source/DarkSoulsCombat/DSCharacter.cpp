@@ -155,6 +155,9 @@ void ADSCharacter::PostInitializeComponents()
 
 	DSAnim->OnParryingCheck.AddUObject(this, &ADSCharacter::ParryingCheck);
 
+	DSAnim->OnStunMontageEnd.AddUObject(this, &ADSCharacter::OnStunStartMontageEnded);
+
+	
 	DSAnim->OnMontageEnded.AddDynamic(this, &ADSCharacter::OnAttackMontageEnded);
 
 	DSAnim->OnMontageEnded.AddDynamic(this, &ADSCharacter::OnRollingMontageEnded);
@@ -163,7 +166,7 @@ void ADSCharacter::PostInitializeComponents()
 
 	DSAnim->OnMontageEnded.AddDynamic(this, &ADSCharacter::OnParryingHitMontageEnded);
 	
-	DSAnim->OnMontageEnded.AddDynamic(this, &ADSCharacter::OnStunStartMontageEnded);
+	//DSAnim->OnMontageEnded.AddDynamic(this, &ADSCharacter::OnStunStartMontageEnded);
 	
 
 	OnMouseLRClickCheck.AddLambda([=]() -> void {
@@ -859,6 +862,7 @@ float ADSCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& Da
 	// 마지막으로 공격한 사람이 누군지 확인하기 위해서
 	LastAttacker = Cast<ADSCharacter>(DamageCauser);
 
+
 	// 가해자의 방향을 알기위해서
 	FVector VictimDir = GetActorLocation() - (GetActorLocation() + GetActorForwardVector());
 	FVector AttackerDir = DamageCauser->GetActorLocation() - (DamageCauser->GetActorLocation() + DamageCauser->GetActorForwardVector());
@@ -869,6 +873,7 @@ float ADSCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& Da
 		DSLOG(Warning, TEXT("Front"));
 		//프론트 공격 애니메이션 실행하고 리턴
 		DSAnim->PlayHitReactionFront();
+		SetStun(false);
 		return FinalDamage;
 	}
 	else if (DotFB >= 0.7 && DotFB < 1)
@@ -876,6 +881,7 @@ float ADSCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& Da
 		DSLOG(Warning, TEXT("Back"));
 		//백 공격 애니메이션 실행하고 리턴
 		DSAnim->PlayHitReactionBack();
+		SetStun(false);
 		return FinalDamage;
 	}
 
@@ -885,6 +891,7 @@ float ADSCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& Da
 		DSLOG(Warning, TEXT("Right"));
 		//Right 공격 애니메이션 실행하고 리턴
 		DSAnim->PlayHitReactionLeft();
+		SetStun(false);
 		return FinalDamage;
 	}
 	else if (CorssFB.Z > 0)
@@ -892,6 +899,7 @@ float ADSCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& Da
 		DSLOG(Warning, TEXT("Left"));
 		//Left 공격 애니메이션 실행하고 리턴
 		DSAnim->PlayHitReactionRight();
+		SetStun(false);
 		return FinalDamage;
 	}
 
@@ -1219,10 +1227,8 @@ void ADSCharacter::OnParryingHitMontageEnded(UAnimMontage* Montage, bool bInterr
 	DSAnim->PlayStunStartMontage();
 }
 
-void ADSCharacter::OnStunStartMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+void ADSCharacter::OnStunStartMontageEnded()
 {
-	DSCHECK(IsStun());
-
 	SetStun(false);
 }
 

@@ -14,6 +14,8 @@ class DARKSOULSCOMBAT_API UBTDecorator_BBBase_StunCheck : public UBTDecorator_Bl
 {
 	GENERATED_BODY()
 
+public:
+	UBTDecorator_BBBase_StunCheck();
 
 private:
 

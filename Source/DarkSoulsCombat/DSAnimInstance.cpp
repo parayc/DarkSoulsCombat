@@ -308,6 +308,12 @@ void UDSAnimInstance::PlayStunStartMontage()
 }
 
 
+void UDSAnimInstance::AnimNotify_StunMontageEnd()
+{
+	OnStunMontageEnd.Broadcast();
+}
+
+
 
 void UDSAnimInstance::PlayJumpAttackMontage()
 {

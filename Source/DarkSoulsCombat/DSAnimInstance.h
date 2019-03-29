@@ -13,6 +13,7 @@ DECLARE_MULTICAST_DELEGATE(FOnLastAttackDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnParryingTimeStartDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnParryingTimeEndDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnParryingCheckDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnStunMontageEndDelegate);
 
 /**
  * 
@@ -52,6 +53,7 @@ public:
 	FOnParryingTimeStartDelegate	OnParryingTimeStart;
 	FOnParryingTimeEndDelegate		OnParryingTimeEnd;
 	FOnParryingCheckDelegate		OnParryingCheck;
+	FOnStunMontageEndDelegate		OnStunMontageEnd;
 
 
 	int m_nAttackComboType;
@@ -131,6 +133,9 @@ private:
 	
 	UFUNCTION()
 	void AnimNotify_ParryingCheck();
+	
+	UFUNCTION()
+	void AnimNotify_StunMontageEnd();
 
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))

@@ -152,6 +152,9 @@ public:
 
 	void Parrying();
 
+	bool m_bStun;
+
+
 private:
 	EControlMode eControlMode = EControlMode::eNomal;
 
@@ -161,8 +164,7 @@ private:
 	
 	int32 nAttackComboType;
 
-	bool m_bStun;
-
+	
 	bool m_bCanParrying;
 
 	bool m_bPressedMouseLeft;
@@ -219,8 +221,8 @@ private:
 	UFUNCTION()
 		void OnParryingHitMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
-	UFUNCTION()
-		void OnStunStartMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	//UFUNCTION()
+	void OnStunStartMontageEnded();
 
 
 
