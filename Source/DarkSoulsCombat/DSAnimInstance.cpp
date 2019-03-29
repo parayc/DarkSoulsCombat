@@ -73,6 +73,12 @@ UDSAnimInstance::UDSAnimInstance()
 		ShieldBlockMontage = SHIELDBLOCK_MONTAGE.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> START_STUN_MONTAGE(TEXT("/Game/DarkSolusCombat/DSCharacter/DSAnimation/DS_Stun_Start_Montage.DS_Stun_Start_Montage"));
+	if (START_STUN_MONTAGE.Succeeded())
+	{
+		StunStartMontage = START_STUN_MONTAGE.Object;
+	}
+
 
 	
 
@@ -289,6 +295,15 @@ void UDSAnimInstance::PlayShieldBlockMontage()
 	{
 		Montage_Play(ShieldBlockMontage, 1.0f);
 		DSLOG(Warning, TEXT("ShieldBlockMontage"));
+	}
+}
+
+void UDSAnimInstance::PlayStunStartMontage()
+{
+	if (!Montage_IsPlaying(StunStartMontage))
+	{
+		Montage_Play(StunStartMontage, 1.0f);
+		DSLOG(Warning, TEXT("StunStartMontage"));
 	}
 }
 
@@ -604,3 +619,5 @@ UAnimMontage* UDSAnimInstance::GetRollBackward()
 {
 	return RollBackward;
 }
+
+

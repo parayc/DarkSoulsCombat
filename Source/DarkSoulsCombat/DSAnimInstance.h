@@ -39,6 +39,8 @@ public:
 
 	void PlayParryingHitMontage();
 
+	void PlayStunStartMontage();
+
 	// 콤보 공격관련 함수
 	void JumpToAttackMontageSection(int32 NewSection);
 
@@ -155,10 +157,11 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Parrying, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* ParryingHitMontage;
 
-
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Guard, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* ShieldBlockMontage;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Guard, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* StunStartMontage;
 
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Hit, Meta = (AllowPrivateAccess = true))

@@ -20,6 +20,8 @@ DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnRollingEndDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnAttackComboTypeChange);
 DECLARE_MULTICAST_DELEGATE(FOnMouseLRClickCheckDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnSetStunDelegate);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSetStunDelegate, bool, Token);
 
 UCLASS()
 class DARKSOULSCOMBAT_API ADSCharacter : public ACharacter
@@ -94,6 +96,7 @@ public:
 	FOnRollingEndDelegate OnRollingEnd;
 	FOnAttackComboTypeChange OnAttackComboTypeChange;
 	FOnMouseLRClickCheckDelegate OnMouseLRClickCheck;
+	FOnSetStunDelegate OnSetStunDelegate;
 
 
 
@@ -213,7 +216,11 @@ private:
 	UFUNCTION()
 		void OnParryingMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
+	UFUNCTION()
+		void OnParryingHitMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
+	UFUNCTION()
+		void OnStunStartMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
 
 

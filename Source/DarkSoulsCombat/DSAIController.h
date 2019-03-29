@@ -36,6 +36,7 @@ public:
 	static const FName fDeltaSecSumKey;
 	static const FName IsDeadKey;
 	static const FName nMeleeAttackTypeKey;
+	static const FName IsStunKey;
 
 
 

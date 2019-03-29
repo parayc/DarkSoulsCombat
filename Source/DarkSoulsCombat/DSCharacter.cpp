@@ -161,6 +161,11 @@ void ADSCharacter::PostInitializeComponents()
 
 	DSAnim->OnMontageEnded.AddDynamic(this, &ADSCharacter::OnParryingMontageEnded);
 
+	DSAnim->OnMontageEnded.AddDynamic(this, &ADSCharacter::OnParryingHitMontageEnded);
+	
+	DSAnim->OnMontageEnded.AddDynamic(this, &ADSCharacter::OnStunStartMontageEnded);
+	
+
 	OnMouseLRClickCheck.AddLambda([=]() -> void {
 		OnParrying();
 	});
@@ -1207,6 +1212,22 @@ void ADSCharacter::OnParryingMontageEnded(UAnimMontage* Montage, bool bInterrupt
 	IsParrying = false;
 }
 
+void ADSCharacter::OnParryingHitMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	DSCHECK(IsStun());
+
+	DSAnim->PlayStunStartMontage();
+}
+
+void ADSCharacter::OnStunStartMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	DSCHECK(IsStun());
+
+	SetStun(false);
+}
+
+
+
 
 void ADSCharacter::MouseLeftClick()
 {
@@ -1243,6 +1264,9 @@ void ADSCharacter::Parrying()
 void ADSCharacter::SetStun(bool bValue)
 {
 	m_bStun = bValue;
+
+	OnSetStunDelegate.Broadcast();
+	/*OnSetStunDelegate.Broadcast(m_bStun);*/
 }
 
 bool ADSCharacter::IsStun()

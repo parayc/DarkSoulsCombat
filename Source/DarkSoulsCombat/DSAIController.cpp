@@ -24,6 +24,9 @@ const FName ADSAIController::eAICombatStateKey(TEXT("eAICombatState"));
 const FName ADSAIController::fDeltaSecSumKey(TEXT("fDeltaSecSum"));
 const FName ADSAIController::IsDeadKey(TEXT("IsDead"));
 const FName ADSAIController::nMeleeAttackTypeKey(TEXT("nMeleeAttackType"));
+const FName ADSAIController::IsStunKey(TEXT("IsStun"));
+
+
 
 //const FName ADSAIController::AICombatStateKey(TEXT("AICombatState"));
 
