@@ -22,7 +22,7 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	APawn* ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
 	if (nullptr == ControllingPawn) return;
 
-	ADSCharacter* Character = Cast<ADSCharacter>(ControllingPawn);
+	Character = Cast<ADSCharacter>(ControllingPawn);
 
 	// 뭔가 이거 아닌것같지만 일단 이렇게... 동작은 되도록
 	// 델리게이트를 받아서 사망시 비헤이비트리 동작 못하도록 막음
@@ -30,6 +30,11 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 
 	Character->CharacterStat->OnHPIsZero.AddLambda([this]() -> void {
 		pOwnerComp->GetBlackboardComponent()->SetValueAsBool(ADSAIController::IsDeadKey, true);
+	});
+
+
+	Character->OnSetStunDelegate.AddLambda([=]() -> void {
+		pOwnerComp->GetBlackboardComponent()->SetValueAsBool(ADSAIController::IsStunKey, Character->m_bStun);
 	});
 
 	UWorld* World = ControllingPawn->GetWorld();

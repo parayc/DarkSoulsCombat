@@ -4,6 +4,7 @@
 
 #include "DarkSoulsCombat.h"
 #include "BehaviorTree/BTService.h"
+#include "DSCharacter.h"
 #include "BTService_Detect.generated.h"
 
 
@@ -17,6 +18,9 @@ class DARKSOULSCOMBAT_API UBTService_Detect : public UBTService
 	
 public :
 	UBTService_Detect();
+
+private:
+	ADSCharacter* Character;
 
 protected:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
