@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "DarkSoulsCombat.h"
 #include "GameFramework/PlayerState.h"
 #include "DSPlayerState.generated.h"
 
@@ -14,4 +14,21 @@ class DARKSOULSCOMBAT_API ADSPlayerState : public APlayerState
 {
 	GENERATED_BODY()
 	
+public:
+	ADSPlayerState();
+
+	int32 GetGameScore() const;
+	int32 GetCharacterLevel() const;
+
+	void InitPlayerData();
+
+protected:
+	UPROPERTY(Transient)
+	int32 GameScore;
+
+	//Transient : 과도현상?
+	UPROPERTY(Transient)
+	int32 CharacterLevel;
+	
+
 };

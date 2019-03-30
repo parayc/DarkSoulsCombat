@@ -18,4 +18,8 @@ class DARKSOULSCOMBAT_API ADSGameMode : public AGameModeBase
 public:
 	ADSGameMode();
 
+private:
+	virtual void PostLogin(APlayerController * NewPlayer) override;
+
+
 };
