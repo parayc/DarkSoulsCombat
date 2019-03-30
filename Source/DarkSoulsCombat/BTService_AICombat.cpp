@@ -100,7 +100,8 @@ void UBTService_AICombat::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 
 
 			// 시야 방향
-	pDSCharacter->bUseControllerRotationYaw = false;
+	// Turn Task Node가 해줄거다
+	/*pDSCharacter->bUseControllerRotationYaw = false;
 	pDSCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
 
 	FVector TargetVect = Target->GetActorLocation() - pDSCharacter->GetActorLocation();
@@ -109,6 +110,8 @@ void UBTService_AICombat::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	FRotator NewRot = FMath::RInterpTo(CurrentRot, TargetRot, DeltaSeconds, 10.f);
 
 	pDSCharacter->SetActorRotation(NewRot);
+	*/
+	
 	// 시햐 방향 끝
 	//FVector LookVector = Target->GetActorLocation() - pDSCharacter->GetActorLocation();
 	//LookVector.Z = 0.0f;

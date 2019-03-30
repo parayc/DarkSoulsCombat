@@ -1,0 +1,9 @@
+내 캐릭터 정면에 타겟이 존재하는지 확인
+
+FVector MyCharacterVector = GetActorLocation() -  (GetActorLocation()) + GetActorForwardVector());
+FVector Target = Target->GetActorLocation() - (Target->GetActorLocation() + (Target->GetActorForwardVector());
+
+float DotFB = FVector::DotProduct(MyCharacterVector.GetSafeNormal(), Target.GetSafeNormal());
+
+정면 DotFB >= -1 && DotFB < -0.7
+후면 DotFB >- 0.7 && DotFB < 1

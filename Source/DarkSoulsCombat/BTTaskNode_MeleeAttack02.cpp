@@ -31,13 +31,29 @@ EBTNodeResult::Type UBTTaskNode_MeleeAttack02::ExecuteTask(UBehaviorTreeComponen
 		return EBTNodeResult::Failed;
 	}
 	
+	auto Target = Cast<ADSCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(ADSAIController::TargetKey));
+	if (nullptr == Target)
+	{
+		EBTNodeResult::Failed;
+	}
+
 	if (!DSCharacter->IsPlayerControlled())
 	{
 		DSCharacter->SetAttackComboType(nMeleeAttackType);
 	}
 	m_nAttackCnt = rand() % 3 + 1;
 
+	// 타겟이 정면에 존재하지 않으면 공격 안함
+	FVector MyCharacterVector = DSCharacter->GetActorLocation() - (DSCharacter->GetActorLocation() + DSCharacter->GetActorForwardVector());
+	FVector TargetVector = Target->GetActorLocation() - (Target->GetActorLocation() + Target->GetActorForwardVector());
 
+	float DotFB = FVector::DotProduct(MyCharacterVector.GetSafeNormal(), TargetVector.GetSafeNormal());
+
+	if (!(DotFB >= -1 && DotFB < -0.7))
+	{
+		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(ADSAIController::eAICombatStateKey, 0);
+		return EBTNodeResult::Failed;
+	}
 
 
 	DSCharacter->Attack();
@@ -68,12 +84,12 @@ void UBTTaskNode_MeleeAttack02::TickTask(UBehaviorTreeComponent& OwnerComp, uint
 		EBTNodeResult::Failed;
 	}
 
-	if (DSCharacter->GetDistanceTo(Target) > 200)
-	{
-		DSCharacter->SetAttackComboType(1);
-		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(ADSAIController::eAICombatStateKey, 0);
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-	}
+	//if (DSCharacter->GetDistanceTo(Target) > 200)
+	//{
+	//	DSCharacter->SetAttackComboType(1);
+	//	OwnerComp.GetBlackboardComponent()->SetValueAsEnum(ADSAIController::eAICombatStateKey, 0);
+	//	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	//}
 
 
 	//if (Target->IsAttacking)
@@ -89,6 +105,12 @@ void UBTTaskNode_MeleeAttack02::TickTask(UBehaviorTreeComponent& OwnerComp, uint
 
 	// AI의 콤보공격을 위한 함수
 	FName CurrentSection = DSCharacter->GetDSAnim()->Montage_GetCurrentSection();
+
+	if (CurrentSection.IsEqual("None"))
+	{
+		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(ADSAIController::eAICombatStateKey, 0);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	}
 
 	FString str = CurrentSection.ToString();
 	FString strTemp = str.Right(1);

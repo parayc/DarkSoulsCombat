@@ -29,7 +29,6 @@ bool UBTDecorator_MeleeAttackDistance::CalculateRawConditionValue(UBehaviorTreeC
 	}
 	else
 	{
-
 		bResult = false;
 		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(ADSAIController::eAICombatStateKey, 0);
 	}

@@ -566,6 +566,8 @@ void ADSCharacter::RadialDetection(float DeltaTime)
 	// 이것은 틱마다 계솔 돌아가야하는 기느잉 맞아
 	// 카메라가 타겟을 바라보도록 만드는 부분
 
+	if (IsAttacking) return;
+
 	if (IsPlayerControlled())
 	{
 		if (CameraTarget != nullptr)
